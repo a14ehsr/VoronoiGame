@@ -1,1 +1,2 @@
 # GraphEncampmentGame
+グラフをベースにした陣取りゲームの対戦プラットフォーム
