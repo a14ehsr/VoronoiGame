@@ -31,6 +31,7 @@ public class GraphEncampmentGame {
     Setting setting;
     int min, max, change;
     String[] outputStr;
+    int numberOfPlayers;
 
     int timeout = 5000;
 
@@ -53,7 +54,7 @@ public class GraphEncampmentGame {
      */
     private void startSubProcess(String[] cmd) throws IOException {
         Runtime rt = Runtime.getRuntime();
-        int numberOfPlayers = cmd.length;
+        numberOfPlayers = cmd.length;
         processes = new Process[numberOfPlayers];
         inputStreams = new InputStream[numberOfPlayers];
         outputStreams = new OutputStream[numberOfPlayers];
@@ -88,125 +89,80 @@ public class GraphEncampmentGame {
             e.printStackTrace();
         }
         // パラメータ取得
-        int n = setting.getGameNum();
-        int round = setting.getRoundNum();
+        int numberOfGames = setting.getGameNum();
+        int numberOfSelectNodes = setting.getRoundNum();
         int outputLevel = setting.getOutputLevel();
 
-        String[] names = new String[2];
-        for (int p = 0; p < 2; p++) {
-            outputStreams[p].write((min + "\n").getBytes());
-            outputStreams[p].write((max + "\n").getBytes());
-            outputStreams[p].write((n + "\n").getBytes());
-            outputStreams[p].write((round + "\n").getBytes());
-            outputStreams[p].write((change + "\n").getBytes());
+        String[] names = new String[numberOfPlayers];
+        for (int p = 0; p < numberOfPlayers; p++) {
+            outputStreams[p].write((numberOfNode + "\n").getBytes());
+            outputStreams[p].write((numberOfGame + "\n").getBytes());
+            outputStreams[p].write((numberOfSelectNode + "\n").getBytes());
+            outputStreams[p].write((p + "\n").getBytes()); // player code
+            // TODO: グラフデータのwrite
+
             outputStreams[p].flush();
             names[p] = bufferedReaders[p].readLine();
         }
 
-        if (outputLevel > 0)
-            System.out.println("player1 : " + names[0] + " vs " + names[1] + " : player2");
+        if (outputLevel > 0) {
+            System.out.print("players : ");
+            for (String name : names)
+                System.out.printf(name + " ");
+            System.out.println();
+        }
 
-        int[][][] gameRecord = new int[n][round][2];
-        int hit = 0;
-        int hitRoundSum = 0;
+        outputStr = new String[numberOfPlayers];
 
-        // n回対戦
-        for (int i = 0; i < n; i++) {
-            int count = 10;
-            int beforeDeffnceNumber = -1;
-            // round回のラウンド
-            int j = 0;
-            for (; j < round; j++) {
-                // それぞれの数字を取得
-                Thread[] threads = new Thread[2];
-                outputStr = new String[2];
-                for (int p = 0; p < 2; p++) {
-                    threads[p] = new GetResponseThread(p);
-                    threads[p].start();
+        int[][] gameRecord = new int[numberOfGames][numberOfNodes];
+
+        List<Integer> sequence = new LinkedList<Integer>();
+        for (int i = 0; i < numberOfPlayers; i++) {
+            sequence.add(i);
+        }
+        // numberOfGames回対戦
+        for (int i = 0; i < numberOfGames; i++) {
+
+            for (int j = 0; j < numberOfSelectNodes; j++) {
+
+                for (int p : sequence) {
+                    // それぞれの数字を取得
+                    Thread thread = new GetResponseThread(p);
+                    thread.start();
                     try {
-                        threads[p].join(timeout);
+                        thread.join(timeout);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                }
-                for (int p = 0; p < 2; p++) {
+
                     if (!processes[p].isAlive())
                         throw new IOException("次のプレイヤーのサブプロセスが停止しました :" + names[p]);
                     if (outputStr[p] == null)
                         throw new TimeoutException("一定時間以内に次のプレイヤーから値を取得できませんでした :" + names[p]);
-                }
-                int[] num = new int[2];
-                for (int p = 0; p < 2; p++) {
+
+                    int num;
                     try {
-                        num[p] = Integer.parseInt(outputStr[p]);
+                        num = Integer.parseInt(outputStr[p]);
                     } catch (NumberFormatException e) {
                         throw new NumberFormatException("次のプレイヤーから整数以外の値を取得しました :" + names[p]);
                     }
-                }
-
-                if (outputLevel > 2)
-                    System.out.printf("   round%03d : (Attack,Defence) = (%3d,%3d)\n", j, num[0], num[1]);
-
-                // 範囲内の数字かチェック
-                checkRange(num, names);
-
-                // 防御側の変更制約チェック @TODO テスト
-                if (beforeDeffnceNumber == -1) {
-                    beforeDeffnceNumber = num[1];
-                } else if (beforeDeffnceNumber != num[1]) {
-                    if (count < 9) {
-                        throw new AgainstTheRulesException("規定回数以内にDefence側の数値が変更されました．");
-                    } else {
-                        count = 1;
-                        beforeDeffnceNumber = num[1];
+                    // TODO: 確保可能なノードかどうかのチェック（AgainsTheRulesExcept）throw new
+                    // AgainstTheRulesException("");
+                    gameRecord[i][num] = p;
+                    for (int pp : sequence) {
+                        if (pp == p)
+                            continue;
+                        outputStreams[pp].write((num + "\n").getBytes());
+                        outputStreams[pp].flush();
                     }
-                } else {
-                    count++;
+
                 }
-                // System.err.println("!"+count+"");
-
-                // 攻撃側が防御側より上ならば，もっと下にするべきという意味で，ud=-1
-                // 攻撃側が防御側より下ならば，もっと上にするべきという意味で，ud=1
-                // 攻撃側と防御側が一致したならば，ぴったり一致という意味で，ud=0
-                // とする．
-                int ud;
-                if (num[0] == num[1]) {
-                    ud = 0;
-                } else {
-                    ud = num[0] < num[1] ? 1 : -1;
-                }
-
-                for (int p = 0; p < 2; p++) {
-                    if (!processes[p].isAlive())
-                        throw new IOException("次のプレイヤーのサブプロセスが停止しました :" + names[p]);
-                }
-                outputStreams[0].write((ud + "\n").getBytes());
-                outputStreams[0].flush();
-                outputStreams[1].write((num[0] + "\n").getBytes());
-                outputStreams[1].flush();
-
-                if (ud == 0) {
-                    hit++;
-                    hitRoundSum += (j + 1);
-                    break;
-                }
-
-                // レコードへ記録
-                for (int p = 0; p < 2; p++)
-                    gameRecord[i][j][p] = num[p];
-
+                sequence.add(sequence.remove(0));
             }
-
-            if (outputLevel > 1) {
-                if (j < round)
-                    System.out.printf("%3d回目でhit\n", (j + 1));
-                else
-                    System.out.println("hitならず");
-            }
-
+            // TODO: リザルトの計算
         }
         if (outputLevel > 0) {
-            System.out.printf("hit回数/ゲーム数 = %3d/%d  |  hitのaverage = %f\n", hit, n, ((double) hitRoundSum / hit));
+            // TODO:resultの出力
         }
         return new Result(names, hit, hitRoundSum);
     }
