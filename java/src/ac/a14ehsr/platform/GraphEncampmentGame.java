@@ -146,7 +146,7 @@ public class GraphEncampmentGame {
                     } catch (NumberFormatException e) {
                         throw new NumberFormatException("次のプレイヤーから整数以外の値を取得しました :" + names[p]);
                     }
-                    // TODO: 確保可能なノードかどうかのチェック（AgainsTheRulesExcept）throw new
+                    gain(p, i, num, gameRecord, names);
                     // AgainstTheRulesException("");
                     gameRecord[i][num] = p;
                     for (int pp : sequence) {
@@ -183,17 +183,21 @@ public class GraphEncampmentGame {
     }
 
     /**
-     * 数字が範囲内かどうか
+     * プレイヤーによるノードの獲得を制御
      * 
-     * @param remain 残額
-     * @param names  プレイヤー名
+     * @param player     獲得プレイヤー
+     * @param game       ゲーム数
+     * @param node       獲得ノード
+     * @param gameRecord レコード
+     * @param names      プレイヤーネーム
      * @throws AgainstTheRulesException ルール違反例外
      */
-    private void checkRange(int[] number, String[] names) throws AgainstTheRulesException {
-        for (int i = 0; i < 2; i++) {
-            if (number[i] < min || number[i] > max)
-                throw new AgainstTheRulesException(names[i] + "が範囲外の値を宣言しました．");
+    private void gain(int player, int game, int node, int[][] gameRecord, String[] names)
+            throws AgainstTheRulesException {
+        if (gameRecord[game][node] != -1) {
+            throw new AgainstTheRulesException("次のプレイヤーが既に獲得されたノードを選択しました：" + names[player]);
         }
+        gameRecord[game][node] = player;
     }
 
     public static void main(String[] args) {
