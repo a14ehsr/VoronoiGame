@@ -43,28 +43,29 @@ public class P_SampleJava {
         sc = new Scanner(System.in);
         initialize();
 
-        int[][] record = new int[numberOfGames][numberOfNodes];
-        Arrays.fill(record, -1);
-
-        List<Integer> sequence = new LinkedList<Integer>();
-        for (int i = 0; i < numberOfPlayers; i++) {
-            sequence.add(i);
+        int[][] gameRecord = new int[numberOfGames][numberOfNodes];
+        for (int[] record : gameRecord) {
+            Arrays.fill(record, -1);
         }
+
         // ゲーム数ループ
         for (int i = 0; i < numberOfGames; i++) {
-
+            List<Integer> sequence = new LinkedList<Integer>();
+            for (int j = 0; j < numberOfPlayers; j++) {
+                sequence.add(sc.nextInt());
+            }
             // 選択ノード数分のループ
             for (int j = 0; j < numberOfSelectNodes; j++) {
 
                 for (int p : sequence) {
                     int selectNode;
                     if (p == playerCode) {
-                        selectNode = select(record, i);
+                        selectNode = select(gameRecord, i);
                         System.out.println(selectNode);
                     } else {
                         selectNode = sc.nextInt();
                     }
-                    record[i][selectNode] = p;
+                    gameRecord[i][selectNode] = p;
                 }
             }
             sequence.add(sequence.remove(0));
