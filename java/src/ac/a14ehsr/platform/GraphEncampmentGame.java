@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.logging.FileHandler;
@@ -113,18 +114,29 @@ public class GraphEncampmentGame {
         }
 
         outputStr = new String[numberOfPlayers];
+        // 利得のレコード
+        int[][] gainRecord = new int[numberOfGames][numberOfPlayers];
 
+        // 各プレイヤーの勝利数
+        int[] playerPoints = new int[numberOfPlayers];
+
+        // ゲームレコードの準備(初期値-1)
         int[][] gameRecord = new int[numberOfGames][numberOfNodes];
+        for (int[] record : gameRecord) {
+            Arrays.fill(record, -1);
+        }
 
+        // プレイヤーの手番の管理用リスト．線形リストで十分．
         List<Integer> sequence = new LinkedList<Integer>();
         for (int i = 0; i < numberOfPlayers; i++) {
             sequence.add(i);
         }
+
         // numberOfGames回対戦
         for (int i = 0; i < numberOfGames; i++) {
-
+            // 選択するノード数分のループ
             for (int j = 0; j < numberOfSelectNodes; j++) {
-
+                // 各プレイヤーのループ
                 for (int p : sequence) {
                     // それぞれの数字を取得
                     Thread thread = new GetResponseThread(p);
@@ -146,7 +158,7 @@ public class GraphEncampmentGame {
                     } catch (NumberFormatException e) {
                         throw new NumberFormatException("次のプレイヤーから整数以外の値を取得しました :" + names[p]);
                     }
-                    gain(p, i, num, gameRecord, names);
+                    gain(p, num, gameRecord[i], names[p]);
                     // AgainstTheRulesException("");
                     gameRecord[i][num] = p;
                     for (int pp : sequence) {
@@ -159,7 +171,8 @@ public class GraphEncampmentGame {
                 }
                 sequence.add(sequence.remove(0));
             }
-            // TODO: リザルトの計算
+            // 勝ち点の計算
+            evaluate(gameRecord[i], playerPoints);
         }
         if (outputLevel > 0) {
             // TODO:resultの出力
@@ -185,19 +198,17 @@ public class GraphEncampmentGame {
     /**
      * プレイヤーによるノードの獲得を制御
      * 
-     * @param player     獲得プレイヤー
-     * @param game       ゲーム数
-     * @param node       獲得ノード
-     * @param gameRecord レコード
-     * @param names      プレイヤーネーム
+     * @param player 獲得プレイヤー
+     * @param node   獲得ノード
+     * @param record レコード
+     * @param names  プレイヤーネーム
      * @throws AgainstTheRulesException ルール違反例外
      */
-    private void gain(int player, int game, int node, int[][] gameRecord, String[] names)
-            throws AgainstTheRulesException {
-        if (gameRecord[game][node] != -1) {
-            throw new AgainstTheRulesException("次のプレイヤーが既に獲得されたノードを選択しました：" + names[player]);
+    private void gain(int player, int node, int[] record, String name) throws AgainstTheRulesException {
+        if (record[node] != -1) {
+            throw new AgainstTheRulesException("次のプレイヤーが既に獲得されたノードを選択しました：" + name);
         }
-        gameRecord[game][node] = player;
+        record[node] = player;
     }
 
     public static void main(String[] args) {
