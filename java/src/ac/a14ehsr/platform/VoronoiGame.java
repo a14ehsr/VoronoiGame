@@ -122,9 +122,11 @@ public class VoronoiGame {
         int[] playerPoints = new int[numberOfPlayers];
 
         // ゲームレコードの準備(初期値-1)
-        int[][] gameRecord = new int[numberOfGames][numberOfNodes];
-        for (int[] record : gameRecord) {
-            Arrays.fill(record, -1);
+        int[][][] gameRecord = new int[numberOfGames][numberOfNodes][2];
+        for (int[][] record : gameRecord) {
+            for (int[] pair : record) {
+                Arrays.fill(pair, -1);
+            }
         }
 
         // プレイヤーの手番の管理用リスト．線形リストで十分．
@@ -165,8 +167,7 @@ public class VoronoiGame {
                             throw new NumberFormatException("次のプレイヤーから整数以外の値を取得しました :" + names[p]);
                         }
                         gain(p, num, gameRecord[i], names[p]);
-                        // AgainstTheRulesException("");
-                        gameRecord[i][num] = p;
+                        gameRecord[i][num][1] = j;
                         for (int pp : sequence) {
                             if (pp == p)
                                 continue;
@@ -211,11 +212,11 @@ public class VoronoiGame {
      * @param names  プレイヤーネーム
      * @throws AgainstTheRulesException ルール違反例外
      */
-    private void gain(int player, int node, int[] record, String name) throws AgainstTheRulesException {
-        if (record[node] != -1) {
+    private void gain(int player, int node, int[][] record, String name) throws AgainstTheRulesException {
+        if (record[node][0] != -1) {
             throw new AgainstTheRulesException("次のプレイヤーが既に獲得されたノードを選択しました：" + name);
         }
-        record[node] = player;
+        record[node][0] = player;
     }
 
     public static void main(String[] args) {
