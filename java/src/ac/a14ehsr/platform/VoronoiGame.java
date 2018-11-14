@@ -128,7 +128,7 @@ public class VoronoiGame {
         int[] playerPoints = new int[numberOfPlayers];
 
         // ゲームレコードの準備(初期値-1)
-        int[][][] gameRecord = new int[numberOfGames][][];
+        int[][][][] gameRecord = new int[numberOfGames][][][];
 
 
         // プレイヤーの手番の管理用リスト．線形リストで十分．
@@ -137,16 +137,20 @@ public class VoronoiGame {
         // numberOfGames回対戦
         for (int i = 0; i < numberOfGames; i++) {
             graph = new GridGraph(10, 10);
-            gameRecord[i] = new int[graph.getNumberOfNodes()][2];
-            for (int[] pair : gameRecord[i]) {
-                Arrays.fill(pair, -1);
+            gameRecord[i] = new int[sequenceList.size()][graph.getNumberOfNodes()][2];
+            for (int[][] sequenceRecord : gameRecord[i]) {
+                for (int[] nodeInfo : sequenceRecord) {
+                    Arrays.fill(nodeInfo, -1);
+                }
             }
+
             for (int p = 0; p < numberOfPlayers; p++) {
                 outputStreams[p].write((graph.toString()).getBytes()); // graph情報
                 outputStreams[p].flush();
                 
             }
-            for (int[] sequence : sequenceList) {
+            for(int s=0; s<sequenceList.size(); s++){
+                int[] sequence = sequenceList.get(s);
                 for (int p = 0; p < numberOfPlayers; p++) {
                     for (int num : sequence) {
                         outputStreams[p].write((num + "\n").getBytes()); // graph情報
@@ -175,10 +179,10 @@ public class VoronoiGame {
                         try {
                             num = Integer.parseInt(outputStr[p]);
                         } catch (NumberFormatException e) {
-                            throw new NumberFormatException("次のプレイヤーから整数以外の値を取得しました :" + names[p]);
+                            throw new NumberFormatException("次のプレイヤーから整数以外の値を取得しました :" + names[p]+" :"+outputStr[p]);
                         }
-                        gain(p, num, gameRecord[i], names[p]);
-                        gameRecord[i][num][1] = j;
+                        gain(p, num, gameRecord[i][s], names[p]);
+                        gameRecord[i][s][num][1] = j;
                         for (int pp : sequence) {
                             if (pp == p)
                                 continue;
@@ -188,17 +192,17 @@ public class VoronoiGame {
 
                     }
                 }
-                /*
+                
                 for (int a=0; a<10; a++) {
                     for (int b=0; b<10; b++) {
-                        System.out.printf("%2d ",gameRecord[i][a*10+b][0]);
+                        System.out.printf("%2d ",gameRecord[i][s][a*10+b][0]);
                     }
                     System.out.println();
                 }
                 System.out.println();
-                */
+                
                 // 勝ち点の計算
-                evaluate(gameRecord[i], gainRecord[i], playerPoints);
+                //evaluate(gameRecord[i], gainRecord[i], playerPoints);
             }
 
         }
@@ -302,18 +306,10 @@ public class VoronoiGame {
 
     private void autoRun(List<String> commandList, String[] names, List<Result> resultList,int[] matching, int count) {
         if (numberOfPlayers == count) {
-            for (int num : matching) {
-                System.out.print(num + " ");
-            }
-            System.out.println();
             // 対戦とリザルトの格納
             String[] commands = new String[numberOfPlayers];
             for (int i = 0; i < numberOfPlayers; i++) {
                 commands[i] = commandList.get(matching[i]);
-            }
-            System.out.println("comand");
-            for (String com : commands) {
-                System.out.print(" " + com);
             }
             try {
                 startSubProcess(commands);
@@ -336,6 +332,7 @@ public class VoronoiGame {
                 matching[0] = i;
                 autoRun(commandList, names, resultList, matching, count + 1);
             }
+            return;
         }
 
         // matching[count]番目以降との組み合わせだけを考える

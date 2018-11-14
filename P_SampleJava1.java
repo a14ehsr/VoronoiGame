@@ -24,10 +24,10 @@ public class P_SampleJava1 {
      * @param game   ゲーム数
      * @return 選択ノード番号
      */
-    private int select(int[][][] record, int game) {
+    private int select(int[][][][] record, int game, int sequenceNumber) {
         while (true) {
             int selectNode = (int) (Math.random() * numberOfNodes);
-            if (record[game][selectNode][0] == -1) {
+            if (record[game][sequenceNumber][selectNode][0] == -1) {
                 return selectNode;
             }
         }
@@ -45,22 +45,24 @@ public class P_SampleJava1 {
         sc = new Scanner(System.in);
         initialize();
 
-        int[][][] gameRecord = new int[numberOfGames][][];
+        int[][][][] gameRecord = new int[numberOfGames][][][];
 
         // ゲーム数ループ
         for (int i = 0; i < numberOfGames; i++) {
             loadGraph();
-            gameRecord[i] = new int[numberOfNodes][2];
-            for (int[] num : gameRecord[i]) {
-                Arrays.fill(num,-1);
+            gameRecord[i] = new int[patternSize][numberOfNodes][2];
+            for (int[][] sequenceRecord : gameRecord[i]) {
+                for (int[] nodeInfo : sequenceRecord) {
+                    Arrays.fill(nodeInfo, -1);
+                }
             }
-            for (int s=0; s<patternSize; s++) {
+            for (int s = 0; s < patternSize; s++) {
 
                 List<Integer> sequence = new LinkedList<Integer>();
                 for (int j = 0; j < numberOfPlayers; j++) {
                     sequence.add(sc.nextInt());
                 }
-                //sequence.forEach(System.err::print);
+                // sequence.forEach(System.err::print);
 
                 // 選択ノード数分のループ
                 for (int j = 0; j < numberOfSelectNodes; j++) {
@@ -68,22 +70,31 @@ public class P_SampleJava1 {
                     for (int p : sequence) {
                         int selectNode;
                         if (p == playerCode) {
-                            selectNode = select(gameRecord, i);
+                            selectNode = select(gameRecord, i, s);
                             System.out.println(selectNode);
                         } else {
                             selectNode = sc.nextInt();
                         }
-                        gameRecord[i][selectNode][0] = p;
-                        gameRecord[i][selectNode][1] = j;
+                        gameRecord[i][s][selectNode][0] = p;
+                        gameRecord[i][s][selectNode][1] = j;
+                        /*
+                        for (int a = 0; a < 10; a++) {
+                            for (int b = 0; b < 10; b++) {
+                                System.err.printf("%2d ", gameRecord[i][s][a * 10 + b][0]);
+                            }
+                            System.err.println();
+                        }
+                        System.err.println();
+                        */
                     }
-                }                
+                }
             }
         }
     }
 
     /**
      *
-
+    
      */
     private void initialize() {
         numberOfPlayers = sc.nextInt();
