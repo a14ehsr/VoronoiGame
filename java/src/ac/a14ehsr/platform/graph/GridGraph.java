@@ -22,7 +22,8 @@ public class GridGraph extends Graph {
         setEdge();
     }
 
-    public int[] evaluate(int[] gain, int numberOfPlayers, int numberOfSelectNodes) {
+    @Override
+    public int[] evaluate(final int[] gain, int numberOfPlayers, int numberOfSelectNodes) {
         int[] value = new int[numberOfPlayers];
 
         int[][] gainNodeList = new int[numberOfPlayers][numberOfSelectNodes];
@@ -65,14 +66,28 @@ public class GridGraph extends Graph {
                     if (distance[p][i][j] < min) {
                         min = distance[p][i][j];
                         gainPlayer = p;
+                    } else if (distance[p][i][j] == min) {
+                        gainPlayer = -1;
                     }
                 }
                 planeGain[i][j] = gainPlayer;
             }
         }
+        /*
+        System.out.println("獲得状況");
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
-                value[planeGain[i][j]] += nodeWeight[i * m + j];
+                System.out.printf("%2d", planeGain[i][j]);
+            }
+            System.out.println();
+        }
+        */
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (planeGain[i][j] != -1) {
+                    value[planeGain[i][j]] += nodeWeight[i * m + j];
+                }
+
             }
         }
         return value;
@@ -88,11 +103,18 @@ public class GridGraph extends Graph {
             unsetNodeList.add(i);
         }
         int[][] numberOfNodeWeight = new int[5][];
+        /*
         numberOfNodeWeight[0] = new int[] { 1, 10 };
         numberOfNodeWeight[1] = new int[] { 2, 20 };
         numberOfNodeWeight[2] = new int[] { 3, 40 };
         numberOfNodeWeight[3] = new int[] { 4, 20 };
         numberOfNodeWeight[4] = new int[] { 5, 10 };
+        */
+        numberOfNodeWeight[0] = new int[] { 1, 2 };
+        numberOfNodeWeight[1] = new int[] { 2, 4 };
+        numberOfNodeWeight[2] = new int[] { 3, 5 };
+        numberOfNodeWeight[3] = new int[] { 4, 3 };
+        numberOfNodeWeight[4] = new int[] { 5, 2 };
 
         // 添え字iの重みのノードを順に決めていく
         for (int i = 0; i < numberOfNodeWeight.length; i++) {
@@ -104,11 +126,20 @@ public class GridGraph extends Graph {
                 nodeWeight[node] = numberOfNodeWeight[i][0];
             }
         }
-    }
 
+    /*
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            System.out.printf("%2d", nodeWeight[i * n + j]);
+        }
+        System.out.println();
+    }
+    */
+    }
+    
     /**
-     * 辺の設定.
-     */
+    * 辺の設定.
+    */
     @Override
     void setEdge() {
         int edgeCount = 0;

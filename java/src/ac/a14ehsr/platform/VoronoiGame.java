@@ -122,7 +122,7 @@ public class VoronoiGame {
 
         outputStr = new String[numberOfPlayers];
         // 利得のレコード
-        int[][] gainRecord = new int[numberOfGames][numberOfPlayers];
+        int[][][] gainRecord = new int[numberOfGames][patternSize][numberOfPlayers];
 
         // 各プレイヤーの勝利数
         int[] playerPoints = new int[numberOfPlayers];
@@ -136,7 +136,7 @@ public class VoronoiGame {
         sequenceList = Permutation.of(numberOfPlayers);
         // numberOfGames回対戦
         for (int i = 0; i < numberOfGames; i++) {
-            graph = new GridGraph(10, 10);
+            graph = new GridGraph(4, 4);
             gameRecord[i] = new int[sequenceList.size()][graph.getNumberOfNodes()][2];
             for (int[][] sequenceRecord : gameRecord[i]) {
                 for (int[] nodeInfo : sequenceRecord) {
@@ -192,17 +192,27 @@ public class VoronoiGame {
 
                     }
                 }
-                
-                for (int a=0; a<10; a++) {
-                    for (int b=0; b<10; b++) {
-                        System.out.printf("%2d ",gameRecord[i][s][a*10+b][0]);
+                /*
+                for (int a=0; a<4; a++) {
+                    for (int b=0; b<4; b++) {
+                        System.out.printf("%2d ",gameRecord[i][s][a*4+b][0]);
                     }
                     System.out.println();
                 }
                 System.out.println();
-                
+                */
+
                 // 勝ち点の計算
-                //evaluate(gameRecord[i], gainRecord[i], playerPoints);
+                int[] gainNodeInfo = new int[gameRecord[i][s].length];
+                for (int t = 0; t < gainNodeInfo.length; t++) {
+                    gainNodeInfo[t] = gameRecord[i][s][t][0];
+                }
+                gainRecord[i][s] = graph.evaluate(gainNodeInfo, numberOfPlayers, numberOfSelectNodes);
+                System.out.println("利得");
+                for (int num : gainRecord[i][s]) {
+                    System.out.print(" " + num);
+                }
+                System.out.println();
             }
 
         }

@@ -18,9 +18,8 @@ public abstract class Graph {
         return numberOfNodes;
     }
 
-    public int[] evaluate(int numberOfPlayers) {
-        int[] value = { 0 };
-
+    public int[] evaluate(int[] gain, int numberOfPlayers, int numberOfSelectNodes) {
+        int[] value = new int[numberOfPlayers];
         return value;
     }
 
