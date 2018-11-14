@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Arrays;
 
-public class P_SampleJava {
+public class P_Random {
     private int numberOfPlayers;
     private int numberOfGames;
     private int numberOfSelectNodes; // 1ゲームで選択するノード
@@ -37,7 +37,7 @@ public class P_SampleJava {
     }
 
     public static void main(String[] args) {
-        (new P_SampleJava()).run();
+        (new P_Random()).run();
     }
 
     /**
@@ -55,16 +55,16 @@ public class P_SampleJava {
             gameRecord[i] = new int[patternSize][numberOfNodes][2];
             for (int[][] sequenceRecord : gameRecord[i]) {
                 for (int[] nodeInfo : sequenceRecord) {
-                    Arrays.fill(nodeInfo, -1);    
+                    Arrays.fill(nodeInfo, -1);
                 }
             }
-            for (int s=0; s<patternSize; s++) {
+            for (int s = 0; s < patternSize; s++) {
 
                 List<Integer> sequence = new LinkedList<Integer>();
                 for (int j = 0; j < numberOfPlayers; j++) {
                     sequence.add(sc.nextInt());
                 }
-                //sequence.forEach(System.err::print);
+                // sequence.forEach(System.err::print);
 
                 // 選択ノード数分のループ
                 for (int j = 0; j < numberOfSelectNodes; j++) {
@@ -81,23 +81,19 @@ public class P_SampleJava {
                         gameRecord[i][s][selectNode][1] = j;
 
                         /*
-                        for (int a = 0; a < 10; a++) {
-                            for (int b = 0; b < 10; b++) {
-                                System.err.printf("%2d ", gameRecord[i][s][a * 10 + b][0]);
-                            }
-                            System.err.println();
-                        }
-                        System.err.println();
-                        */
+                         * for (int a = 0; a < 10; a++) { for (int b = 0; b < 10; b++) {
+                         * System.err.printf("%2d ", gameRecord[i][s][a * 10 + b][0]); }
+                         * System.err.println(); } System.err.println();
+                         */
                     }
-                }                
+                }
             }
         }
     }
 
     /**
      *
-
+    
      */
     private void initialize() {
         numberOfPlayers = sc.nextInt();
