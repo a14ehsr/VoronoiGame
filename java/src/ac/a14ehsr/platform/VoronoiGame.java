@@ -265,32 +265,8 @@ public class VoronoiGame {
     }
 
     /**
-     * 対戦の実行 TODO: 任意のプレイヤー数に対応するために，組み合わせを再帰を使って書き直す
+     * 対戦の実行
      */
-    /*
-    private void autoRun() {
-        List<String> commandList = setting.getCommandList();
-        String[] names = new String[commandList.size()];
-        int[][] resultTable = new int[names.length][names.length];
-        for (int i = 0; i < names.length; i++) {
-            for (int j = i + 1; j < names.length; j++) {
-                try {
-                    startSubProcess(new String[] { commandList.get(i), commandList.get(j) });
-                    Result result = run();
-                    names[i] = result.names[0];
-                    names[j] = result.names[1];
-                    resultTable[i][j] = result.playerPoints[i];
-                    resultTable[j][i] = result.playerPoints[j];
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    processDestroy();
-                }
-            }
-        }
-        result(names, resultTable);
-    }
-    */
     private void autoRun() {
         List<String> commandList = setting.getCommandList();
         String[] names = new String[commandList.size()];
