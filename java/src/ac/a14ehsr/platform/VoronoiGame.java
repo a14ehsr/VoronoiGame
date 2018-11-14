@@ -136,7 +136,7 @@ public class VoronoiGame {
         sequenceList = Permutation.of(numberOfPlayers);
         // numberOfGames回対戦
         for (int i = 0; i < numberOfGames; i++) {
-            graph = new GridGraph(4, 4);
+            graph = new GridGraph(10, 10);
             gameRecord[i] = new int[sequenceList.size()][graph.getNumberOfNodes()][2];
             for (int[][] sequenceRecord : gameRecord[i]) {
                 for (int[] nodeInfo : sequenceRecord) {
@@ -192,15 +192,14 @@ public class VoronoiGame {
 
                     }
                 }
-                /*
-                for (int a=0; a<4; a++) {
-                    for (int b=0; b<4; b++) {
-                        System.out.printf("%2d ",gameRecord[i][s][a*4+b][0]);
+                if(outputLevel >= 3){
+                    for (int a=0; a<10; a++) {
+                        for (int b=0; b<10; b++) {
+                            System.out.printf("%2d ",gameRecord[i][s][a*10+b][0]);
+                        }
+                        System.out.println();
                     }
-                    System.out.println();
                 }
-                System.out.println();
-                */
 
                 // 勝ち点の計算
                 int[] gainNodeInfo = new int[gameRecord[i][s].length];
@@ -243,15 +242,46 @@ public class VoronoiGame {
     }
 
     private int[] calcPoint(int[] gainRecord) {
+        List<NumberPair> dict = new ArrayList<>();
+        for (int i = 0; i < numberOfPlayers; i++) {
+            dict.add(new NumberPair(i, gainRecord[i]));
+        }
+        dict.sort((a,b) -> b.num - a.num);
         int[] point = new int[numberOfPlayers];
         if (numberOfPlayers == 2) {
-            if (gainRecord[0] > gainRecord[1]) {
-                point[0]++;
-            } else if (gainRecord[0] < gainRecord[1]) {
-                point[1]++;
+            NumberPair numpair = dict.get(0);
+            point[numpair.key]++;
+            if (numpair.num == dict.get(1).num) {
+                point[dict.get(1).key]++;
             }
+        } else if (numberOfPlayers == 3) {
+            int[] score = new int[]{5,2,0};
+            int beforeNum = dict.get(0).num;
+            int index = 0;
+            NumberPair numpair = dict.get(0);
+            point[numpair.key] = score[index];
+
+            for (int i = 1; i < numberOfPlayers; i++) {
+                numpair = dict.get(i);
+                if (beforeNum != numpair.num) {
+                    beforeNum = numpair.num;
+                    index = i;
+                }
+                point[numpair.key] = score[index];
+
+            }
+
         }
         return point;
+    }
+
+    class NumberPair {
+        int key;
+        int num;
+        NumberPair(int key, int num) {
+            this.key = key;
+            this.num = num;
+        }
     }
 
     /**
