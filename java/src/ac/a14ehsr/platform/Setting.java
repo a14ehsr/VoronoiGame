@@ -50,6 +50,15 @@ class Setting {
     }
 
     /**
+     * プレイヤー人数のgettter
+     * 
+     * @return
+     */
+    int getNumberOfPlayers() {
+        return numberOfPlayers;
+    }
+
+    /**
      * ゲーム数のgetter
      */
     int getNumberOfGames() {
@@ -89,20 +98,26 @@ class Setting {
         }
         String[] line;
         line = sc.nextLine().split(" ");
+        if (!"numberOfPlayers".equals(line[0])) {
+            throw new Exception("line1 need be numberOfPlayers");
+        }
+        numberOfPlayers = Integer.parseInt(line[1]);
+
+        line = sc.nextLine().split(" ");
         if (!"numberOfGames".equals(line[0])) {
-            throw new Exception("line1 need be numberOfGames");
+            throw new Exception("line2 need be numberOfGames");
         }
         numberOfGames = Integer.parseInt(line[1]);
 
         line = sc.nextLine().split(" ");
         if (!"numberOfSelectNodes".equals(line[0])) {
-            throw new Exception("line2 need be numberOfSelectNodes");
+            throw new Exception("line3 need be numberOfSelectNodes");
         }
         numberOfSelectNodes = Integer.parseInt(line[1]);
 
         line = sc.nextLine().split(" ");
         if (!"outputlevel".equals(line[0])) {
-            throw new Exception("line3 need be outputlevel");
+            throw new Exception("line4 need be outputlevel");
         }
         outputLevel = Integer.parseInt(line[1]);
     }

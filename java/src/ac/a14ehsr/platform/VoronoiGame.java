@@ -49,6 +49,7 @@ public class VoronoiGame {
         // パラメータ取得
         numberOfGames = setting.getNumberOfGames();
         numberOfSelectNodes = setting.getNumberOfSelectNodes();
+        numberOfPlayers = setting.getNumberOfPlayers();
         outputLevel = setting.getOutputLevel();
 
     }
@@ -94,16 +95,25 @@ public class VoronoiGame {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println("1");
 
         String[] names = new String[numberOfPlayers];
+
+        int patternSize = 1;
+        for (int i=1; i<=numberOfPlayers; i++) {
+            patternSize*=i;
+        }
+
         for (int p = 0; p < numberOfPlayers; p++) {
             outputStreams[p].write((numberOfPlayers + "\n").getBytes());
             outputStreams[p].write((numberOfGames + "\n").getBytes());
             outputStreams[p].write((numberOfSelectNodes + "\n").getBytes());
+            outputStreams[p].write((patternSize + "\n").getBytes());
             outputStreams[p].write((p + "\n").getBytes()); // player code
             outputStreams[p].flush();
             names[p] = bufferedReaders[p].readLine();
         }
+        System.out.println("2");
 
         if (outputLevel > 0) {
             System.out.print("players : ");
@@ -120,12 +130,8 @@ public class VoronoiGame {
         int[] playerPoints = new int[numberOfPlayers];
 
         // ゲームレコードの準備(初期値-1)
-        int[][][] gameRecord = new int[numberOfGames][numberOfSelectNodes][2];
-        for (int[][] record : gameRecord) {
-            for (int[] pair : record) {
-                Arrays.fill(pair, -1);
-            }
-        }
+        int[][][] gameRecord = new int[numberOfGames][][];
+
 
         // プレイヤーの手番の管理用リスト．線形リストで十分．
         List<int[]> sequenceList = new ArrayList<>();
@@ -133,11 +139,22 @@ public class VoronoiGame {
         // numberOfGames回対戦
         for (int i = 0; i < numberOfGames; i++) {
             graph = new GridGraph(10, 10);
+            gameRecord[i] = new int[graph.getNumberOfNodes()][2];
+            for (int[] pair : gameRecord[i]) {
+                Arrays.fill(pair, -1);
+            }
             for (int p = 0; p < numberOfPlayers; p++) {
                 outputStreams[p].write((graph.toString()).getBytes()); // graph情報
                 outputStreams[p].flush();
+                
             }
             for (int[] sequence : sequenceList) {
+                for (int p = 0; p < numberOfPlayers; p++) {
+                    for (int num : sequence) {
+                        outputStreams[p].write((num + "\n").getBytes()); // graph情報
+                        outputStreams[p].flush();
+                    }
+                }
                 // 選択するノード数分のループ
                 for (int j = 0; j < numberOfSelectNodes; j++) {
                     // 各プレイヤーのループ
@@ -173,6 +190,13 @@ public class VoronoiGame {
 
                     }
                 }
+                for (int a=0; a<10; a++) {
+                    for (int b=0; b<10; b++) {
+                        System.out.printf("%2d ",gameRecord[i][a*10+b][0]);
+                    }
+                    System.out.println();
+                }
+                System.out.println();
                 // 勝ち点の計算
                 evaluate(gameRecord[i], gainRecord[i], playerPoints);
             }

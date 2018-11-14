@@ -14,6 +14,10 @@ public abstract class Graph {
 
     }
 
+    public int getNumberOfNodes() {
+        return numberOfNodes;
+    }
+
     abstract void setWeight();
 
     abstract void setEdge();
@@ -24,7 +28,7 @@ public abstract class Graph {
             str += (weight + "\n");
         }
         for (int[] edge : edges) {
-            str += (edge[0] + "," + edge[1] + "\n");
+            str += (edge[0] + "\n" + edge[1] + "\n");
         }
 
         return str;
