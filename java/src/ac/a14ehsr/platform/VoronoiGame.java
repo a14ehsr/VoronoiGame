@@ -362,11 +362,7 @@ public class VoronoiGame {
         List<Result> resultList = new ArrayList<>();
         int[] matching = new int[numberOfPlayers];
         autoRun(commandList, names, resultList, matching, 0);
-        for (String name : names) {
-            System.out.print(name + " ");
-        }
-        System.out.println();
-        resultList.forEach(System.out::println);
+        result(names, resultList);
     }
 
     private void autoRun(List<String> commandList, String[] names, List<Result> resultList, int[] matching, int count) {
@@ -382,7 +378,9 @@ public class VoronoiGame {
                 String[] resultNames = result.names;
                 for (int i = 0; i < numberOfPlayers; i++) {
                     names[matching[i]] = resultNames[i];
+                    result.setPlayerID(matching);
                 }
+
                 resultList.add(result);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -410,37 +408,107 @@ public class VoronoiGame {
     /**
      * リザルトの出力
      */
-    private void result(String[] names, int[][] score) {
-        System.out.println("RESULT");
-        for (int i = 0; i < names.length; i++) {
-            System.out.printf("%18s ", names[i]);
+    private void result(String[] names, List<Result> resultList) {
+        if (numberOfPlayers == 3) {
+            System.out.println("RESULT");
+            int[][][] resultArray = new int[names.length][names.length][names.length];
+            for (Result result : resultList) {
+                int[] id = result.playerID;
+                int[] score = result.playerPoints;
+
+                resultArray[id[0]][id[1]][id[2]] = score[0];
+                resultArray[id[1]][id[0]][id[2]] = score[1];
+                resultArray[id[2]][id[0]][id[1]] = score[2];
+            }
+            System.out.printf("%22s", "");
             for (int j = 0; j < names.length; j++) {
-                System.out.printf("%3d ", score[i][j]);
+                for (int k = j + 1; k < names.length; k++) {
+                    System.out.printf("(%d-%d)", j, k);
+                }
             }
             System.out.println();
-        }
+            for (int i = 0; i < names.length; i++) {
+                System.out.printf("%3d,%18s ", i, names[i]);
+                for (int j = 0; j < names.length; j++) {
+                    for (int k = j + 1; k < names.length; k++) {
+                        System.out.printf("%4d ", resultArray[i][j][k]);
+                    }
+                }
+                System.out.println();
+            }
 
-        // リザルト出力用ファイルの準備
-        FileWriter file = null;
-        try {
-            file = new FileWriter("resource/result/result.csv");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        PrintWriter pw = new PrintWriter(new BufferedWriter(file));
-        pw.println("RESULT");
-        for (int i = 0; i < names.length; i++) {
-            pw.printf(",%s", names[i]);
-        }
-        pw.println();
-        for (int i = 0; i < names.length; i++) {
-            pw.printf("%s,", names[i]);
+            // リザルト出力用ファイルの準備
+            FileWriter file = null;
+            try {
+                file = new FileWriter("resource/result/result.csv");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            PrintWriter pw = new PrintWriter(new BufferedWriter(file));
+            pw.println("RESULT");
+            pw.printf(",");
             for (int j = 0; j < names.length; j++) {
-                pw.printf("%d,", score[i][j]);
+                for (int k = j + 1; k < names.length; k++) {
+                    pw.printf(",(%d-%d)", j, k);
+                }
             }
             pw.println();
+            for (int i = 0; i < names.length; i++) {
+                pw.printf("%d,%s,", i, names[i]);
+                for (int j = 0; j < names.length; j++) {
+                    for (int k = j + 1; k < names.length; k++) {
+                        pw.printf("%d,", resultArray[i][j][k]);
+                    }
+                }
+                pw.println();
+            }
+            pw.close();
+        } else if (numberOfPlayers == 2) {
+            System.out.println("RESULT");
+            int[][] resultArray = new int[names.length][names.length];
+            for (Result result : resultList) {
+                int[] id = result.playerID;
+                int[] score = result.playerPoints;
+
+                resultArray[id[0]][id[1]] = score[0];
+                resultArray[id[1]][id[0]] = score[1];
+            }
+            System.out.printf("%23s", "");
+            for (int j = 0; j < names.length; j++) {
+                System.out.printf("%4d ", j);
+            }
+            System.out.println();
+            for (int i = 0; i < names.length; i++) {
+                System.out.printf("%3d,%18s ", i, names[i]);
+                for (int j = 0; j < names.length; j++) {
+                    System.out.printf("%4d ", resultArray[i][j]);
+                }
+                System.out.println();
+            }
+
+            // リザルト出力用ファイルの準備
+            FileWriter file = null;
+            try {
+                file = new FileWriter("resource/result/result.csv");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            PrintWriter pw = new PrintWriter(new BufferedWriter(file));
+            pw.println("RESULT");
+            pw.printf(",");
+            for (int j = 0; j < names.length; j++) {
+                pw.printf(",%d", j);
+            }
+            pw.println();
+            for (int i = 0; i < names.length; i++) {
+                pw.printf("%d,%s,", i, names[i]);
+                for (int j = 0; j < names.length; j++) {
+                    pw.printf("%d,", resultArray[i][j]);
+                }
+                pw.println();
+            }
+            pw.close();
         }
-        pw.close();
 
     }
 
@@ -569,10 +637,18 @@ public class VoronoiGame {
     class Result {
         String[] names;
         int[] playerPoints;
+        int[] playerID;
 
         Result(String[] names, int[] playerPoints) {
             this.names = names;
             this.playerPoints = playerPoints;
+        }
+
+        void setPlayerID(int[] id) {
+            playerID = new int[id.length];
+            for (int i = 0; i < id.length; i++) {
+                playerID[i] = id[i];
+            }
         }
     }
 }
