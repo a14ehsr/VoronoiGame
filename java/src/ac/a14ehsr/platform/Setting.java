@@ -8,78 +8,59 @@ import java.util.List;
 import java.io.File;
 
 /**
- * プラットフォームのコマンドライン引数を受け取って諸々の処理をするクラス
- * パラメータは resource/setting/setting.txtから読み取る.
- * 引数無し実行時には対話モードで動作する．
+ * プラットフォームのコマンドライン引数を受け取って諸々の処理をするクラス パラメータは
+ * resource/setting/setting.txtから読み取る. 引数無し実行時には対話モードで動作する．
  */
 class Setting {
-    private List<String> attackCommand;
-    private List<String> defenceCommand;
-    private List<String> sampleAttackCommand;
-    private List<String> sampleDefenceCommand;
-    private int gameNum;
-    private int roundNum;
+    private List<String> commandList;
+    private List<String> sampleCommandList;
+    private int numberOfGames;
+    private int numberOfSelectNodes;
+    private int numberOfPlayers;
     private int outputLevel;
     private boolean isTest;
 
-    private int minNumber;
-    private int maxNumber;
-    private int change;
     /**
-     * デフォルトコンストラクタ
-     * コマンドのリストの準備と設定ファイル読み込み
+     * デフォルトコンストラクタ コマンドのリストの準備と設定ファイル読み込み
      */
     Setting() {
         isTest = false;
-        attackCommand = new ArrayList<>();
-        defenceCommand = new ArrayList<>();
-        sampleAttackCommand = new ArrayList<>();
-        sampleDefenceCommand = new ArrayList<>();
+        commandList = new ArrayList<>();
+        sampleCommandList = new ArrayList<>();
 
         try {
-            defaultSetting();  
+            defaultSetting();
         } catch (Exception e) {
             System.err.println("settingファイルの様式が規定通りになっていません．");
             System.err.println("起動を中止します．");
             e.printStackTrace();
             System.exit(0);
         }
-        
+
         String common = "java -classpath java/src/ ac.a14ehsr.sample_ai.";
-        sampleAttackCommand.add(common+"attack.A_SameAsk");
-        sampleAttackCommand.add(common + "attack.A_RandomAsk");
-        sampleDefenceCommand.add(common+"defence.D_SameDeclare");
-        sampleDefenceCommand.add(common + "defence.D_RandomDeclare");
+        sampleCommandList.add(common + "P_AiName");
     }
 
-    List<String> getAttackCommand() {
-        return attackCommand;
+    List<String> getSampleCommandList() {
+        return sampleCommandList;
     }
 
-    List<String> getDefenceCommand() {
-        return defenceCommand;
+    List<String> getcommandList() {
+        return commandList;
     }
 
-    List<String> getSampleAttackCommand() {
-        return sampleAttackCommand;
-    }
-
-    List<String> getSampleDefenceCommand() {
-        return sampleDefenceCommand;
-    }
-    
     /**
      * ゲーム数のgetter
      */
-    int getGameNum() {
-        return gameNum;
+    int getNumberOfGames() {
+        return numberOfGames;
     }
 
     /**
-     * 最大ラウンド数のgetter
+     * 選択ノード数のgetter
      */
-    int getRoundNum() {
-        return roundNum;
+    int getNumberOfSelectNodes() {
+        return numberOfSelectNodes;
     }
 
     /**
@@ -93,18 +74,6 @@ class Setting {
         return isTest;
     }
 
-    int getMin() {
-        return minNumber;
-    }
-
-    int getMax() {
-        return maxNumber;
-    }
-
-    int getChange() {
-        return change;
-    }
-
     /**
      * デフォルトの設定を設定ファイルから読み込む
      * 
@@ -114,46 +83,28 @@ class Setting {
         String settingFilePath = "resource/setting/setting.txt";
         Scanner sc = null;
         try {
-            sc = new Scanner(new File(settingFilePath));    
+            sc = new Scanner(new File(settingFilePath));
         } catch (Exception e) {
             e.printStackTrace();
         }
         String[] line;
         line = sc.nextLine().split(" ");
-        if(!"game".equals(line[0])){
-            throw new Exception("line1 need be game");
+        if (!"numberOfGames".equals(line[0])) {
+            throw new Exception("line1 need be numberOfGames");
         }
-        gameNum =  Integer.parseInt(line[1]);
+        numberOfGames = Integer.parseInt(line[1]);
 
         line = sc.nextLine().split(" ");
-        if (!"round".equals(line[0])) {
-            throw new Exception("line2 need be round");
+        if (!"numberOfSelectNodes".equals(line[0])) {
+            throw new Exception("line2 need be numberOfSelectNodes");
         }
-        roundNum = Integer.parseInt(line[1]);
+        numberOfSelectNodes = Integer.parseInt(line[1]);
 
         line = sc.nextLine().split(" ");
         if (!"outputlevel".equals(line[0])) {
             throw new Exception("line3 need be outputlevel");
         }
         outputLevel = Integer.parseInt(line[1]);
-
-        line = sc.nextLine().split(" ");
-        if (!"min".equals(line[0])) {
-            throw new Exception("line4 need be min");
-        }
-        minNumber = Integer.parseInt(line[1]);
-
-        line = sc.nextLine().split(" ");
-        if (!"max".equals(line[0])) {
-            throw new Exception("line5 need be max");
-        }
-        maxNumber = Integer.parseInt(line[1]);
-
-        line = sc.nextLine().split(" ");
-        if (!"change".equals(line[0])) {
-            throw new Exception("line6 need be change");
-        }
-        change = Integer.parseInt(line[1]);
     }
 
     /**
@@ -162,57 +113,42 @@ class Setting {
      * @param args コマンドライン引数
      */
     void start(final String[] args) {
-        boolean successed = false;
         if (args.length > 0) {
             try {
                 setOption(args);
             } catch (NumberFormatException e) {
                 System.err.println(e);
                 System.out.println("オプションがおかしいです．");
-                System.out.println("対話モードで起動します．");
-                dialogueMode();
             } catch (ArrayIndexOutOfBoundsException e) {
                 System.err.println(e);
                 System.out.println("オプションがおかしいです．");
-                System.out.println("対話モードで起動します．");
-                dialogueMode();
             }
         } else {
-            dialogueMode();
+            System.out.println("オプションを指定してください．");
         }
         System.out.println("設定終了");
     }
-    
+
     /**
-     *  コマンドライン引数を元に各設定を行う
+     * コマンドライン引数を元に各設定を行う
      * 
      * @param options コマンドライン引数
      * @return 成功か否か
      * @throws Exception 範囲外アクセス，型変換例外
      */
-    void setOption(final String[] options) throws  NumberFormatException, ArrayIndexOutOfBoundsException{
-        for (int i = 0; i < options.length; i+=2) {
+    void setOption(final String[] options) throws NumberFormatException, ArrayIndexOutOfBoundsException {
+        for (int i = 0; i < options.length; i += 2) {
             switch (options[i]) {
-            case "-a":
-                attackCommand.add(options[i + 1]);
+            case "-p":
+                commandList.add(options[i + 1]);
                 break;
 
-            case "-as":
-                attackCommand.add(options[i + 1]);
-                defenceCommand.addAll(sampleDefenceCommand);
-                break;
-
-            case "-ds":
-                defenceCommand.add(options[i + 1]);
-                attackCommand.addAll(sampleAttackCommand);
-                break;
-
-            case "-d":
-                defenceCommand.add(options[i + 1]);
+            case "-nump":
+                numberOfPlayers = Integer.parseInt(options[i + 1]);
                 break;
 
             case "-game":
-                gameNum = Integer.parseInt(options[i + 1]);
+                numberOfGames = Integer.parseInt(options[i + 1]);
                 break;
 
             case "-olevel":
@@ -220,71 +156,29 @@ class Setting {
                 if (tmp > 3 || tmp < 1) {
                     System.out.println("出力モードは1,2,3のいずれかです．その他の値が入力されています．");
                     System.out.println("既定値で実行します．");
-                }else{
+                } else {
                     outputLevel = tmp;
                 }
                 break;
 
-            case "-c":
-                change = Integer.parseInt(options[i + 1]);
-                break;
-            
-            case "-min":
-                minNumber = Integer.parseInt(options[i + 1]);
-                break;
-
-            case "-max":
-                maxNumber = Integer.parseInt(options[i + 1]);
-                break;
-
             case "-auto":
-                readCommandList(attackCommand, "resource/command_list/attack/attack_command_list_green.txt");
-                readCommandList(defenceCommand, "resource/command_list/defence/defence_command_list_green.txt");
-                /*
-                // サンプルはとりあえずなし
-                if("true".equals(options[i + 1])){
-                    command.addAll(sampleCommand);
+                readCommandList(commandList, "resource/command_list/command_list_green.txt");
+                if ("true".equals(options[i + 1])) {
+                    commandList.addAll(sampleCommandList);
                 }
-                */
-                
+
                 break;
             case "-test":
-                gameNum = Integer.parseInt(options[i + 1]);
+                numberOfGames = Integer.parseInt(options[i + 1]);
                 isTest = true;
-                readCommandList(attackCommand,
-                        "resource/command_list/attack/attack_command_list.txt");
-                readCommandList(defenceCommand,
-                        "resource/command_list/defence/defence_command_list.txt");
+                readCommandList(commandList, "resource/command_list/command_list.txt");
                 outputLevel = 0;
                 break;
             default:
                 throw new ArrayIndexOutOfBoundsException();
             }
         }
-    }
 
-    /**
-     *  対話モードでの設定処理
-     */
-    void dialogueMode() {
-        Scanner sc = new Scanner(System.in);
-        String ai;
-        System.out.println("対話モード起動");
-
-        // aiの設定
-        System.out.println("攻撃プレイヤーを設定します．");
-        attackCommand.add(sc.next());
-        System.out.println("防御プレイヤーを設定します．");
-        defenceCommand.add(sc.next());
-
-        // gameNum 変更処理
-        System.out.print("ゲーム数を変更しますか？ (y/n) :");
-        if ("y".equals(sc.next())) {
-            System.out.print("ゲーム数を入力してください: ");
-            gameNum = sc.nextInt();
-        }
-
-        System.out.println("対戦を開始します．");
     }
 
     void readCommandList(List<String> commandList, String fileName) {
@@ -294,7 +188,7 @@ class Setting {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        while(sc.hasNext()) {
+        while (sc.hasNext()) {
             commandList.add(sc.nextLine());
         }
     }
