@@ -13,7 +13,7 @@ public class GridGraph extends Graph {
      * @param n // 縦のサイズ
      * @param m // 横のサイズ
      */
-    GridGraph(int n, int m) {
+    public GridGraph(int n, int m) {
         super(n * m, m * (n - 1) + n * (m - 1));
         this.n = n;
         this.m = m;

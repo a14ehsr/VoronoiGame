@@ -45,7 +45,7 @@ class Setting {
         return sampleCommandList;
     }
 
-    List<String> getcommandList() {
+    List<String> getCommandList() {
         return commandList;
     }
 

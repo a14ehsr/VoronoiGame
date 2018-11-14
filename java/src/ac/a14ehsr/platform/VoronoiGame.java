@@ -17,6 +17,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -96,9 +97,9 @@ public class VoronoiGame {
 
         String[] names = new String[numberOfPlayers];
         for (int p = 0; p < numberOfPlayers; p++) {
-            outputStreams[p].write((numberOfNode + "\n").getBytes());
-            outputStreams[p].write((numberOfGame + "\n").getBytes());
-            outputStreams[p].write((numberOfSelectNode + "\n").getBytes());
+            outputStreams[p].write((numberOfPlayers + "\n").getBytes());
+            outputStreams[p].write((numberOfGames + "\n").getBytes());
+            outputStreams[p].write((numberOfSelectNodes + "\n").getBytes());
             outputStreams[p].write((p + "\n").getBytes()); // player code
             outputStreams[p].flush();
             names[p] = bufferedReaders[p].readLine();
@@ -119,7 +120,7 @@ public class VoronoiGame {
         int[] playerPoints = new int[numberOfPlayers];
 
         // ゲームレコードの準備(初期値-1)
-        int[][][] gameRecord = new int[numberOfGames][numberOfNodes][2];
+        int[][][] gameRecord = new int[numberOfGames][numberOfSelectNodes][2];
         for (int[][] record : gameRecord) {
             for (int[] pair : record) {
                 Arrays.fill(pair, -1);
@@ -128,15 +129,12 @@ public class VoronoiGame {
 
         // プレイヤーの手番の管理用リスト．線形リストで十分．
         List<int[]> sequenceList = new ArrayList<>();
-        for (int i = 0; i < numberOfPlayers; i++) {
-            sequence.add(i);
-        }
         sequenceList = Permutation.of(numberOfPlayers);
         // numberOfGames回対戦
         for (int i = 0; i < numberOfGames; i++) {
             graph = new GridGraph(10, 10);
             for (int p = 0; p < numberOfPlayers; p++) {
-                outputStreams[p].write((graph).getBytes()); // graph情報
+                outputStreams[p].write((graph.toString()).getBytes()); // graph情報
                 outputStreams[p].flush();
             }
             for (int[] sequence : sequenceList) {
@@ -239,22 +237,21 @@ public class VoronoiGame {
     }
 
     /**
-     * 対戦の実行
+     * 対戦の実行 TODO: 任意のプレイヤー数に対応するために，組み合わせを再帰を使って書き直す
      */
     private void autoRun() {
-        List<String> attackCommandList = setting.getAttackCommand();
-        List<String> defenceCommandList = setting.getDefenceCommand();
-        String[] attackNames = new String[attackCommandList.size()];
-        String[] defenceNames = new String[defenceCommandList.size()];
-        double[][] resultTable = new double[attackNames.length][defenceNames.length];
-        for (int i = 0; i < attackNames.length; i++) {
-            for (int j = 0; j < defenceNames.length; j++) {
+        List<String> commandList = setting.getCommandList();
+        String[] names = new String[commandList.size()];
+        int[][] resultTable = new int[names.length][names.length];
+        for (int i = 0; i < names.length; i++) {
+            for (int j = i + 1; j < names.length; j++) {
                 try {
-                    startSubProcess(new String[] { attackCommandList.get(i), defenceCommandList.get(j) });
+                    startSubProcess(new String[] { commandList.get(i), commandList.get(j) });
                     Result result = run();
-                    attackNames[i] = result.names[0];
-                    defenceNames[j] = result.names[1];
-                    resultTable[i][j] = ((double) result.hitRoundSum / result.hit);
+                    names[i] = result.names[0];
+                    names[j] = result.names[1];
+                    resultTable[i][j] = result.playerPoints[i];
+                    resultTable[j][i] = result.playerPoints[j];
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
@@ -262,18 +259,18 @@ public class VoronoiGame {
                 }
             }
         }
-        result(attackNames, defenceNames, resultTable);
+        result(names, resultTable);
     }
 
     /**
      * リザルトの出力
      */
-    private void result(String[] attackNames, String[] defenceNames, double[][] score) {
+    private void result(String[] names, int[][] score) {
         System.out.println("RESULT");
-        for (int i = 0; i < attackNames.length; i++) {
-            System.out.printf("%18s ", attackNames[i]);
-            for (int j = 0; j < defenceNames.length; j++) {
-                System.out.printf("%6.3f ", score[i][j]);
+        for (int i = 0; i < names.length; i++) {
+            System.out.printf("%18s ", names[i]);
+            for (int j = 0; j < names.length; j++) {
+                System.out.printf("%3d ", score[i][j]);
             }
             System.out.println();
         }
@@ -287,14 +284,14 @@ public class VoronoiGame {
         }
         PrintWriter pw = new PrintWriter(new BufferedWriter(file));
         pw.println("RESULT");
-        for (int i = 0; i < defenceNames.length; i++) {
-            pw.printf(",%s", defenceNames[i]);
+        for (int i = 0; i < names.length; i++) {
+            pw.printf(",%s", names[i]);
         }
         pw.println();
-        for (int i = 0; i < attackNames.length; i++) {
-            pw.printf("%s,", attackNames[i]);
-            for (int j = 0; j < defenceNames.length; j++) {
-                pw.printf("%f,", score[i][j]);
+        for (int i = 0; i < names.length; i++) {
+            pw.printf("%s,", names[i]);
+            for (int j = 0; j < names.length; j++) {
+                pw.printf("%d,", score[i][j]);
             }
             pw.println();
         }
@@ -306,64 +303,27 @@ public class VoronoiGame {
      * テスト実行によるふるい
      */
     private void test() {
-        List<String> attackCommandList = setting.getAttackCommand();
-        List<String> defenceCommandList = setting.getDefenceCommand();
-        List<String> sampleAttackCommandList = setting.getSampleAttackCommand();
-        List<String> sampleDefenceCommandList = setting.getSampleDefenceCommand();
+        List<String> commandList = setting.getCommandList();
+        List<String> sampleCommandList = setting.getSampleCommandList();
         Logger testRunLogger = Logger.getLogger(VoronoiGame.class.getName());
         loggerInit(testRunLogger, "resource/log/test_run_err/err.log");
 
         // 実行コマンド出力ファイルの準備
         FileWriter file = null;
         try {
-            file = new FileWriter("resource/command_list/attack/attack_command_list_green.txt");
+            file = new FileWriter("resource/command_list/command_list_green.txt");
         } catch (Exception e) {
             e.printStackTrace();
         }
         PrintWriter pw = new PrintWriter(new BufferedWriter(file));
 
         // サンプルと対戦させ，例外が発生しなかれば，実行可能コマンドとしてファイルに出力
-        // @TODO タイムアウト処理
-        for (int i = 0; i < attackCommandList.size(); i++) {
-            String playerCommand = attackCommandList.get(i);
+        for (int i = 0; i < commandList.size(); i++) {
+            String playerCommand = commandList.get(i);
             System.out.println(playerCommand);
             try {
-                for (int j = 0; j < sampleDefenceCommandList.size(); j++) {
-                    startSubProcess(new String[] { playerCommand, sampleDefenceCommandList.get(j) });
-                    run();
-                    processDestroy();
-                }
-                pw.println(playerCommand);
-            } catch (AgainstTheRulesException e) {
-                testRunLogger.log(Level.INFO, "テスト実行時エラー :", e);
-            } catch (NumberFormatException e) {
-                testRunLogger.log(Level.INFO, "テスト実行時エラー :", e);
-            } catch (IOException e) {
-                System.err.println(e);
-            } catch (TimeoutException e) {
-                System.err.println(e);
-            } finally {
-                processDestroy();
-            }
-        }
-        pw.close();
-
-        // 実行コマンド出力ファイルの準備
-        try {
-            file = new FileWriter("resource/command_list/defence/defence_command_list_green.txt");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        pw = new PrintWriter(new BufferedWriter(file));
-
-        // サンプルと対戦させ，例外が発生しなかれば，実行可能コマンドとしてファイルに出力
-        // @TODO タイムアウト処理
-        for (int i = 0; i < defenceCommandList.size(); i++) {
-            String playerCommand = defenceCommandList.get(i);
-            System.out.println(playerCommand);
-            try {
-                for (int j = 0; j < sampleAttackCommandList.size(); j++) {
-                    startSubProcess(new String[] { sampleAttackCommandList.get(j), playerCommand });
+                for (String command : sampleCommandList) {
+                    startSubProcess(new String[] { playerCommand, command });
                     run();
                     processDestroy();
                 }
