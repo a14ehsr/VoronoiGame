@@ -32,21 +32,23 @@ public class VoronoiGame {
     OutputStream[] outputStreams;
     BufferedReader[] bufferedReaders;
     Setting setting;
-    int min, max, change;
+    int numberOfGames;
+    int numberOfSelectNodes;
+    int outputLevel;
     String[] outputStr;
     int numberOfPlayers;
     Graph graph;
 
-    int timeout = 5000;
+    int timeout = 1000;
 
     public VoronoiGame(String[] args) {
         // 各種設定と実行コマンド関連の処理
         setting = new Setting();
         setting.start(args);
-
-        min = setting.getMin();
-        max = setting.getMax();
-        change = setting.getChange();
+        // パラメータ取得
+        numberOfGames = setting.getNumberOfGames();
+        numberOfSelectNodes = setting.getNumberOfSelectNodes();
+        outputLevel = setting.getOutputLevel();
 
     }
 
@@ -58,7 +60,6 @@ public class VoronoiGame {
      */
     private void startSubProcess(String[] cmd) throws IOException {
         Runtime rt = Runtime.getRuntime();
-        numberOfPlayers = cmd.length;
         processes = new Process[numberOfPlayers];
         inputStreams = new InputStream[numberOfPlayers];
         outputStreams = new OutputStream[numberOfPlayers];
@@ -92,10 +93,6 @@ public class VoronoiGame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // パラメータ取得
-        int numberOfGames = setting.getGameNum();
-        int numberOfSelectNodes = setting.getRoundNum();
-        int outputLevel = setting.getOutputLevel();
 
         String[] names = new String[numberOfPlayers];
         for (int p = 0; p < numberOfPlayers; p++) {
@@ -137,6 +134,7 @@ public class VoronoiGame {
         sequenceList = Permutation.of(numberOfPlayers);
         // numberOfGames回対戦
         for (int i = 0; i < numberOfGames; i++) {
+            graph = new GridGraph(10, 10);
             for (int p = 0; p < numberOfPlayers; p++) {
                 outputStreams[p].write((graph).getBytes()); // graph情報
                 outputStreams[p].flush();
@@ -178,14 +176,25 @@ public class VoronoiGame {
                     }
                 }
                 // 勝ち点の計算
-                evaluate(gameRecord[i], playerPoints);
+                evaluate(gameRecord[i], gainRecord[i], playerPoints);
             }
 
         }
         if (outputLevel > 0) {
             // TODO:resultの出力
         }
-        return new Result(names, hit, hitRoundSum);
+        return new Result(names, playerPoints);
+    }
+
+    /**
+     * 点数の計算を行う recordからgainを取得・記録し， 勝ち点をplayerPointsに加算する．
+     * 
+     * @param record       ゲームの記録
+     * @param gain         プレイヤーごとの獲得利得
+     * @param playerPoints プレイヤーごとの勝ち点
+     */
+    private void evaluate(final int[][] record, int[] gain, int[] playerPoints) {
+
     }
 
     /**
@@ -454,13 +463,11 @@ public class VoronoiGame {
      */
     class Result {
         String[] names;
-        int hit;
-        int hitRoundSum;
+        int[] playerPoints;
 
-        Result(String[] names, int hit, int hitRoundSum) {
+        Result(String[] names, int[] playerPoints) {
             this.names = names;
-            this.hit = hit;
-            this.hitRoundSum = hitRoundSum;
+            this.playerPoints = playerPoints;
         }
     }
 }
