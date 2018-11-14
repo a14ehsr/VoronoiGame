@@ -19,6 +19,7 @@ class Setting {
     private int numberOfPlayers;
     private int outputLevel;
     private boolean isTest;
+    private boolean visible;
 
     /**
      * デフォルトコンストラクタ コマンドのリストの準備と設定ファイル読み込み
@@ -83,6 +84,10 @@ class Setting {
         return isTest;
     }
 
+    boolean isVisible() {
+        return visible;
+    }
+
     /**
      * デフォルトの設定を設定ファイルから読み込む
      * 
@@ -120,6 +125,7 @@ class Setting {
             throw new Exception("line4 need be outputlevel");
         }
         outputLevel = Integer.parseInt(line[1]);
+        visible = false;
     }
 
     /**
@@ -169,7 +175,11 @@ class Setting {
             case "-game":
                 numberOfGames = Integer.parseInt(options[i + 1]);
                 break;
-
+            case "-v":
+                if ("true".equals(options[i + 1])) {
+                    visible = true;
+                }
+                break;
             case "-olevel":
                 int tmp = Integer.parseInt(options[i + 1]);
                 if (tmp > 3 || tmp < 1) {

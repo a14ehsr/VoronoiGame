@@ -14,13 +14,25 @@ public abstract class Graph {
 
     }
 
+    public void printWeight() {
+
+    }
+
     public int getNumberOfNodes() {
         return numberOfNodes;
+    }
+
+    public int[][] getPlaneGain() {
+        return null;
     }
 
     public int[] evaluate(int[] gain, int numberOfPlayers, int numberOfSelectNodes) {
         int[] value = new int[numberOfPlayers];
         return value;
+    }
+
+    public int[] getNodeWeight() {
+        return nodeWeight;
     }
 
     abstract void setWeight();
