@@ -1,5 +1,5 @@
 //
-//  GraphEncampmentGame.java
+//  VoronoiGame.java
 //
 //  Created by Hirano Keisuke on 2018/11/08.
 //  Copyright © 2018年 Hirano Keisuke. All rights reserved.
@@ -22,8 +22,10 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
+import ac.a14ehsr.platform.graph.Graph;
+import ac.a14ehsr.platform.graph.GridGraph;
 
-public class GraphEncampmentGame {
+public class VoronoiGame {
 
     Process[] processes;
     InputStream[] inputStreams;
@@ -33,10 +35,11 @@ public class GraphEncampmentGame {
     int min, max, change;
     String[] outputStr;
     int numberOfPlayers;
+    Graph graph;
 
     int timeout = 5000;
 
-    public GraphEncampmentGame(String[] args) {
+    public VoronoiGame(String[] args) {
         // 各種設定と実行コマンド関連の処理
         setting = new Setting();
         setting.start(args);
@@ -100,8 +103,6 @@ public class GraphEncampmentGame {
             outputStreams[p].write((numberOfGame + "\n").getBytes());
             outputStreams[p].write((numberOfSelectNode + "\n").getBytes());
             outputStreams[p].write((p + "\n").getBytes()); // player code
-            // TODO: グラフデータのwrite
-
             outputStreams[p].flush();
             names[p] = bufferedReaders[p].readLine();
         }
@@ -127,52 +128,58 @@ public class GraphEncampmentGame {
         }
 
         // プレイヤーの手番の管理用リスト．線形リストで十分．
-        List<Integer> sequence = new LinkedList<Integer>();
+        List<int[]> sequenceList = new ArrayList<>();
         for (int i = 0; i < numberOfPlayers; i++) {
             sequence.add(i);
         }
-
+        sequenceList = Permutation.of(numberOfPlayers);
         // numberOfGames回対戦
         for (int i = 0; i < numberOfGames; i++) {
-            // 選択するノード数分のループ
-            for (int j = 0; j < numberOfSelectNodes; j++) {
-                // 各プレイヤーのループ
-                for (int p : sequence) {
-                    // それぞれの数字を取得
-                    Thread thread = new GetResponseThread(p);
-                    thread.start();
-                    try {
-                        thread.join(timeout);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                    if (!processes[p].isAlive())
-                        throw new IOException("次のプレイヤーのサブプロセスが停止しました :" + names[p]);
-                    if (outputStr[p] == null)
-                        throw new TimeoutException("一定時間以内に次のプレイヤーから値を取得できませんでした :" + names[p]);
-
-                    int num;
-                    try {
-                        num = Integer.parseInt(outputStr[p]);
-                    } catch (NumberFormatException e) {
-                        throw new NumberFormatException("次のプレイヤーから整数以外の値を取得しました :" + names[p]);
-                    }
-                    gain(p, num, gameRecord[i], names[p]);
-                    // AgainstTheRulesException("");
-                    gameRecord[i][num] = p;
-                    for (int pp : sequence) {
-                        if (pp == p)
-                            continue;
-                        outputStreams[pp].write((num + "\n").getBytes());
-                        outputStreams[pp].flush();
-                    }
-
-                }
-                sequence.add(sequence.remove(0));
+            for (int p = 0; p < numberOfPlayers; p++) {
+                outputStreams[p].write((graph).getBytes()); // graph情報
+                outputStreams[p].flush();
             }
-            // 勝ち点の計算
-            evaluate(gameRecord[i], playerPoints);
+            for (int[] sequence : sequenceList) {
+                // 選択するノード数分のループ
+                for (int j = 0; j < numberOfSelectNodes; j++) {
+                    // 各プレイヤーのループ
+                    for (int p : sequence) {
+                        // それぞれの数字を取得
+                        Thread thread = new GetResponseThread(p);
+                        thread.start();
+                        try {
+                            thread.join(timeout);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        if (!processes[p].isAlive())
+                            throw new IOException("次のプレイヤーのサブプロセスが停止しました :" + names[p]);
+                        if (outputStr[p] == null)
+                            throw new TimeoutException("一定時間以内に次のプレイヤーから値を取得できませんでした :" + names[p]);
+
+                        int num;
+                        try {
+                            num = Integer.parseInt(outputStr[p]);
+                        } catch (NumberFormatException e) {
+                            throw new NumberFormatException("次のプレイヤーから整数以外の値を取得しました :" + names[p]);
+                        }
+                        gain(p, num, gameRecord[i], names[p]);
+                        // AgainstTheRulesException("");
+                        gameRecord[i][num] = p;
+                        for (int pp : sequence) {
+                            if (pp == p)
+                                continue;
+                            outputStreams[pp].write((num + "\n").getBytes());
+                            outputStreams[pp].flush();
+                        }
+
+                    }
+                }
+                // 勝ち点の計算
+                evaluate(gameRecord[i], playerPoints);
+            }
+
         }
         if (outputLevel > 0) {
             // TODO:resultの出力
@@ -212,7 +219,7 @@ public class GraphEncampmentGame {
     }
 
     public static void main(String[] args) {
-        GraphEncampmentGame obj = new GraphEncampmentGame(args);
+        VoronoiGame obj = new VoronoiGame(args);
         if (obj.setting.isTest()) {
             obj.test();
         } else {
@@ -293,7 +300,7 @@ public class GraphEncampmentGame {
         List<String> defenceCommandList = setting.getDefenceCommand();
         List<String> sampleAttackCommandList = setting.getSampleAttackCommand();
         List<String> sampleDefenceCommandList = setting.getSampleDefenceCommand();
-        Logger testRunLogger = Logger.getLogger(GraphEncampmentGame.class.getName());
+        Logger testRunLogger = Logger.getLogger(VoronoiGame.class.getName());
         loggerInit(testRunLogger, "resource/log/test_run_err/err.log");
 
         // 実行コマンド出力ファイルの準備

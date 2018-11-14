@@ -19,7 +19,7 @@ public abstract class Graph {
     abstract void setEdge();
 
     public String toString() {
-        String str = "";
+        String str = numberOfNodes + "\n" + numberOfEdges + "\n";
         for (int weight : nodeWeight) {
             str += (weight + "\n");
         }
