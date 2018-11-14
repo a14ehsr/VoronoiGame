@@ -2,6 +2,7 @@ package ac.a14ehsr.platform.graph;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class GridGraph extends Graph {
     private int n;
@@ -19,6 +20,62 @@ public class GridGraph extends Graph {
         this.m = m;
         setWeight();
         setEdge();
+    }
+
+    public int[] evaluate(int[] gain, int numberOfPlayers, int numberOfSelectNodes) {
+        int[] value = new int[numberOfPlayers];
+
+        int[][] gainNodeList = new int[numberOfPlayers][numberOfSelectNodes];
+        int[] count = new int[numberOfPlayers];
+        for (int i = 0; i < gain.length; i++) {
+            if (gain[i] != -1) {
+                gainNodeList[gain[i]][count[gain[i]]++] = i;
+            }
+            // gainNodeList[i / m][i % m] = gain[i];
+        }
+
+        int[][][] distance = new int[numberOfPlayers][n][m];
+        for (int[][] planeDistance : distance) {
+            for (int[] array : planeDistance) {
+                Arrays.fill(array, n * m);
+            }
+        }
+        for (int i = 0; i < numberOfPlayers; i++) {
+            for (int j = 0; j < numberOfSelectNodes; j++) {
+                int node = gainNodeList[i][j];
+                int x = node / m;
+                int y = node % m;
+                for (int a = 0; a < n; a++) {
+                    for (int b = 0; b < m; b++) {
+                        int tmp = Math.abs(x - a) + Math.abs(y - b);
+                        if (tmp < distance[i][a][b]) {
+                            distance[i][a][b] = tmp;
+                        }
+
+                    }
+                }
+            }
+        }
+        int[][] planeGain = new int[n][m];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                int min = distance[0][i][j];
+                int gainPlayer = 0;
+                for (int p = 1; p < numberOfPlayers; p++) {
+                    if (distance[p][i][j] < min) {
+                        min = distance[p][i][j];
+                        gainPlayer = p;
+                    }
+                }
+                planeGain[i][j] = gainPlayer;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                value[planeGain[i][j]] += nodeWeight[i * m + j];
+            }
+        }
+        return value;
     }
 
     /**

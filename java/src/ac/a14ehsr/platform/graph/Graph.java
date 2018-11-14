@@ -18,6 +18,12 @@ public abstract class Graph {
         return numberOfNodes;
     }
 
+    public int[] evaluate(int numberOfPlayers) {
+        int[] value = { 0 };
+
+        return value;
+    }
+
     abstract void setWeight();
 
     abstract void setEdge();
