@@ -1,3 +1,4 @@
-numberOfGames 100
-numberOfSelectNodes 5
+numberOfGames 30
+numberOfPlayers 2
+numberOfSelectNodes 7
 outputlevel 1

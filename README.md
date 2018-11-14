@@ -1,2 +1,2 @@
-# GraphEncampmentGame
+# VoronoiGame
 グラフをベースにした陣取りゲームの対戦プラットフォーム
