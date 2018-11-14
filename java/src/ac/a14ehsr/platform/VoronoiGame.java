@@ -95,7 +95,6 @@ public class VoronoiGame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("1");
 
         String[] names = new String[numberOfPlayers];
 
@@ -113,7 +112,6 @@ public class VoronoiGame {
             outputStreams[p].flush();
             names[p] = bufferedReaders[p].readLine();
         }
-        System.out.println("2");
 
         if (outputLevel > 0) {
             System.out.print("players : ");
@@ -190,6 +188,7 @@ public class VoronoiGame {
 
                     }
                 }
+                /*
                 for (int a=0; a<10; a++) {
                     for (int b=0; b<10; b++) {
                         System.out.printf("%2d ",gameRecord[i][a*10+b][0]);
@@ -197,6 +196,7 @@ public class VoronoiGame {
                     System.out.println();
                 }
                 System.out.println();
+                */
                 // 勝ち点の計算
                 evaluate(gameRecord[i], gainRecord[i], playerPoints);
             }
@@ -263,6 +263,7 @@ public class VoronoiGame {
     /**
      * 対戦の実行 TODO: 任意のプレイヤー数に対応するために，組み合わせを再帰を使って書き直す
      */
+    /*
     private void autoRun() {
         List<String> commandList = setting.getCommandList();
         String[] names = new String[commandList.size()];
@@ -285,6 +286,64 @@ public class VoronoiGame {
         }
         result(names, resultTable);
     }
+    */
+    private void autoRun() {
+        List<String> commandList = setting.getCommandList();
+        String[] names = new String[commandList.size()];
+        List<Result> resultList = new ArrayList<>();
+        int[] matching = new int[numberOfPlayers];
+        autoRun(commandList, names, resultList, matching, 0);
+        for (String name : names) {
+            System.out.print(name + " ");
+        }
+        System.out.println();
+        resultList.forEach(System.out::println);
+    }
+
+    private void autoRun(List<String> commandList, String[] names, List<Result> resultList,int[] matching, int count) {
+        if (numberOfPlayers == count) {
+            for (int num : matching) {
+                System.out.print(num + " ");
+            }
+            System.out.println();
+            // 対戦とリザルトの格納
+            String[] commands = new String[numberOfPlayers];
+            for (int i = 0; i < numberOfPlayers; i++) {
+                commands[i] = commandList.get(matching[i]);
+            }
+            System.out.println("comand");
+            for (String com : commands) {
+                System.out.print(" " + com);
+            }
+            try {
+                startSubProcess(commands);
+                Result result = run();
+                String[] resultNames = result.names;
+                for (int i = 0; i < numberOfPlayers; i++) {
+                    names[matching[i]] = resultNames[i];
+                }
+                resultList.add(result);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                processDestroy();
+            }
+
+            return;
+        }
+        if (count == 0) {
+            for (int i = 0; i < commandList.size(); i++) {
+                matching[0] = i;
+                autoRun(commandList, names, resultList, matching, count + 1);
+            }
+        }
+
+        // matching[count]番目以降との組み合わせだけを考える
+        for (int i = matching[count-1]+1; i < commandList.size(); i++) {
+            matching[count] = i;
+            autoRun(commandList, names, resultList, matching, count+1);
+        }
+    } 
 
     /**
      * リザルトの出力

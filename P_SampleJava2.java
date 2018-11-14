@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Arrays;
 
-public class P_SampleJava {
+public class P_SampleJava2 {
     private int numberOfPlayers;
     private int numberOfGames;
     private int numberOfSelectNodes; // 1ゲームで選択するノード
@@ -15,7 +15,7 @@ public class P_SampleJava {
     private int[][] edges;
     private int[] weight;
     private Scanner sc;
-    static final String playerName = "P_0";
+    static final String playerName = "P_2";
 
     /**
      * 書き換え箇所．ノード選択のAI
@@ -35,7 +35,7 @@ public class P_SampleJava {
     }
 
     public static void main(String[] args) {
-        (new P_SampleJava()).run();
+        (new P_SampleJava2()).run();
     }
 
     /**

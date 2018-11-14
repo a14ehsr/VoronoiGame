@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Permutation {
+	/**
+	 * 0~n-1の順列の全通りのリストを返す
+	 * @param n
+	 * @return
+	 */
 	static List<int[]> of(int n) {
 		int[] number = new int[n];
 		for (int i = 0; i < n; i++) {
