@@ -1,0 +1,16 @@
+.DS_Store
+
+#実行ファイルは除外
+*.class
+
+#ai_programのディレクトリのみ残して，中身は除外する
+ai_programs/*
+!ai_programs/.gitkeep
+resource/command_list/*
+!resource/command_list/.gitkeep
+resource/log/auto_compile/*
+!resource/log/auto_compile/.gitkeep
+resource/log/test_run_err/*
+!resource/log/test_run_err/.gitkeep
+resource/result/*
+!resource/result/.gitkeep
