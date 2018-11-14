@@ -208,29 +208,50 @@ public class VoronoiGame {
                     gainNodeInfo[t] = gameRecord[i][s][t][0];
                 }
                 gainRecord[i][s] = graph.evaluate(gainNodeInfo, numberOfPlayers, numberOfSelectNodes);
-                System.out.println("利得");
-                for (int num : gainRecord[i][s]) {
-                    System.out.print(" " + num);
+                int[] gamePoint = calcPoint(gainRecord[i][s]);
+                if (outputLevel >= 2) {
+                    System.out.print(i + "ゲーム，順列種" + s + "番の利得 (");
+                    for (String name : names) {
+                        System.out.print(name + " ");
+                    }
+                    System.out.print(") = ");
+                    for (int num : gainRecord[i][s]) {
+                        System.out.print(num + " ");
+                    }
+                    System.out.print(" | 点数: ");
+                    for (int num : gamePoint) {
+                        System.out.print(num + " ");
+                    }
+                    System.out.println();
+
                 }
-                System.out.println();
+                for(int t=0; t<numberOfPlayers; t++){
+                    playerPoints[t] += gamePoint[t];
+                }
+                
             }
 
         }
         if (outputLevel > 0) {
-            // TODO:resultの出力
+            System.out.print("勝ち点合計:");
+            for (int num : playerPoints) {
+                System.out.print(num + " ");
+            }
+            System.out.println();
         }
         return new Result(names, playerPoints);
     }
 
-    /**
-     * 点数の計算を行う recordからgainを取得・記録し， 勝ち点をplayerPointsに加算する．
-     * 
-     * @param record       ゲームの記録
-     * @param gain         プレイヤーごとの獲得利得
-     * @param playerPoints プレイヤーごとの勝ち点
-     */
-    private void evaluate(final int[][] record, int[] gain, int[] playerPoints) {
-
+    private int[] calcPoint(int[] gainRecord) {
+        int[] point = new int[numberOfPlayers];
+        if (numberOfPlayers == 2) {
+            if (gainRecord[0] > gainRecord[1]) {
+                point[0]++;
+            } else if (gainRecord[0] < gainRecord[1]) {
+                point[1]++;
+            }
+        }
+        return point;
     }
 
     /**
