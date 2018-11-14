@@ -143,8 +143,12 @@ class Setting {
                 commandList.add(options[i + 1]);
                 break;
 
-            case "-nump":
+            case "-nop":
                 numberOfPlayers = Integer.parseInt(options[i + 1]);
+                break;
+
+            case "-nosn":
+                numberOfSelectNodes = Integer.parseInt(options[i + 1]);
                 break;
 
             case "-game":
