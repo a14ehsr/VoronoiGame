@@ -38,7 +38,7 @@ class Setting {
         }
 
         String common = "java -classpath java/src/ ac.a14ehsr.sample_ai.";
-        sampleCommandList.add(common + "P_AiName");
+        sampleCommandList.add(common + "P_Random");
     }
 
     List<String> getSampleCommandList() {
