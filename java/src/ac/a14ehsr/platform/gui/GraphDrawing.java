@@ -91,5 +91,7 @@ public class GraphDrawing {
                 }
             }
         }
+        panel.repaint();
+        frame.validate();
     }
 }
