@@ -116,7 +116,7 @@ public class VoronoiGame {
         }
 
         if (outputLevel > 0) {
-            System.out.print("players : ");
+            System.out.print("players  : ");
             for (String name : names)
                 System.out.printf(name + " ");
             System.out.println();
@@ -228,7 +228,7 @@ public class VoronoiGame {
                 gainRecord[i][s] = graph.evaluate(gainNodeInfo, numberOfPlayers, numberOfSelectNodes);
                 int[] gamePoint = calcPoint(gainRecord[i][s]);
                 if (outputLevel >= 2) {
-                    System.out.print(i + "ゲーム，順列種" + s + "番の利得 (");
+                    System.out.printf("%2dゲーム，順列種%2d番の利得 (",i,s);
                     for (String name : names) {
                         System.out.print(name + " ");
                     }
@@ -277,9 +277,8 @@ public class VoronoiGame {
         int[] point = new int[numberOfPlayers];
         if (numberOfPlayers == 2) {
             NumberPair numpair = dict.get(0);
-            point[numpair.key]++;
-            if (numpair.num == dict.get(1).num) {
-                point[dict.get(1).key]++;
+            if (numpair.num != dict.get(1).num) {
+                point[numpair.key]++;
             }
         } else if (numberOfPlayers == 3) {
             int[] score = new int[] { 5, 2, 0 };
