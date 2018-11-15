@@ -4,14 +4,16 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Arrays;
 
-public class P_SampleJava {
+public class P_Sample {
     private int numberOfPlayers;
     private int numberOfGames;
     private int numberOfSelectNodes; // 1ゲームで選択するノード
     private int numberOfNodes;
     private int numberOfEdges;
+    private int patternSize;
     private int playerCode; // 0始まりの識別番号
     private int[][] edges;
+    private int[] weight;
     private Scanner sc;
     static final String playerName = "P_SampleJava";
 
@@ -22,10 +24,10 @@ public class P_SampleJava {
      * @param game   ゲーム数
      * @return 選択ノード番号
      */
-    private int select(int[][] record, int game) {
+    private int select(int[][][][] record, int game, int sequenceNumber) {
         while (true) {
             int selectNode = (int) (Math.random() * numberOfNodes);
-            if (record[game][selectNode] != -1) {
+            if (record[game][sequenceNumber][selectNode][0] == -1) {
                 return selectNode;
             }
         }
@@ -33,7 +35,7 @@ public class P_SampleJava {
     }
 
     public static void main(String[] args) {
-        (new SampleJavaPlayer()).run();
+        (new P_Sample()).run();
     }
 
     /**
@@ -43,44 +45,52 @@ public class P_SampleJava {
         sc = new Scanner(System.in);
         initialize();
 
-        int[][] gameRecord = new int[numberOfGames][numberOfNodes];
-        for (int[] record : gameRecord) {
-            Arrays.fill(record, -1);
-        }
+        int[][][][] gameRecord = new int[numberOfGames][][][];
 
         // ゲーム数ループ
         for (int i = 0; i < numberOfGames; i++) {
-            List<Integer> sequence = new LinkedList<Integer>();
-            for (int j = 0; j < numberOfPlayers; j++) {
-                sequence.add(sc.nextInt());
-            }
-            // 選択ノード数分のループ
-            for (int j = 0; j < numberOfSelectNodes; j++) {
-
-                for (int p : sequence) {
-                    int selectNode;
-                    if (p == playerCode) {
-                        selectNode = select(gameRecord, i);
-                        System.out.println(selectNode);
-                    } else {
-                        selectNode = sc.nextInt();
-                    }
-                    gameRecord[i][selectNode] = p;
+            loadGraph();
+            gameRecord[i] = new int[patternSize][numberOfNodes][2];
+            for (int[][] sequenceRecord : gameRecord[i]) {
+                for (int[] nodeInfo : sequenceRecord) {
+                    Arrays.fill(nodeInfo, -1);
                 }
             }
-            sequence.add(sequence.remove(0));
+            for (int s = 0; s < patternSize; s++) {
+
+                List<Integer> sequence = new LinkedList<Integer>();
+                for (int j = 0; j < numberOfPlayers; j++) {
+                    sequence.add(sc.nextInt());
+                }
+
+                // 選択ノード数分のループ
+                for (int j = 0; j < numberOfSelectNodes; j++) {
+
+                    for (int p : sequence) {
+                        int selectNode;
+                        if (p == playerCode) {
+                            selectNode = select(gameRecord, i, s);
+                            System.out.println(selectNode);
+                        } else {
+                            selectNode = sc.nextInt();
+                        }
+                        gameRecord[i][s][selectNode][0] = p;
+                        gameRecord[i][s][selectNode][1] = j;
+                    }
+                }
+            }
         }
     }
 
     /**
-     * パラメタの初期化
+     * 初期化
      */
     private void initialize() {
         numberOfPlayers = sc.nextInt();
         numberOfGames = sc.nextInt();
         numberOfSelectNodes = sc.nextInt();
+        patternSize = sc.nextInt();
         playerCode = sc.nextInt();
-        loadGraph();
         System.out.println(playerName);
     }
 
@@ -90,6 +100,10 @@ public class P_SampleJava {
     private void loadGraph() {
         numberOfNodes = sc.nextInt();
         numberOfEdges = sc.nextInt();
+        weight = new int[numberOfNodes];
+        for (int i = 0; i < numberOfNodes; i++) {
+            weight[i] = sc.nextInt();
+        }
         edges = new int[numberOfEdges][2];
         for (int i = 0; i < numberOfEdges; i++) {
             edges[i][0] = sc.nextInt();

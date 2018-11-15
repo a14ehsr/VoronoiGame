@@ -192,6 +192,7 @@ public class VoronoiGame {
                                     "次のプレイヤーから整数以外の値を取得しました :" + names[p] + " :" + outputStr[p]);
                         }
                         gain(p, num, gameRecord[i][s], names[p]);
+
                         gameRecord[i][s][num][1] = j;
                         for (int pp : sequence) {
                             if (pp == p)
@@ -211,6 +212,7 @@ public class VoronoiGame {
                     }
 
                 }
+
                 if (outputLevel >= 3) {
                     for (int a = 0; a < 10; a++) {
                         for (int b = 0; b < 10; b++) {
@@ -228,7 +230,7 @@ public class VoronoiGame {
                 gainRecord[i][s] = graph.evaluate(gainNodeInfo, numberOfPlayers, numberOfSelectNodes);
                 int[] gamePoint = calcPoint(gainRecord[i][s]);
                 if (outputLevel >= 2) {
-                    System.out.printf("%2dゲーム，順列種%2d番の利得 (",i,s);
+                    System.out.printf("%2dゲーム，順列種%2d番の利得 (", i, s);
                     for (String name : names) {
                         System.out.print(name + " ");
                     }
