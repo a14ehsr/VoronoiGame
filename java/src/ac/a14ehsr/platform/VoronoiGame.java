@@ -410,16 +410,22 @@ public class VoronoiGame {
      * リザルトの出力
      */
     private void result(String[] names, List<Result> resultList) {
+        int[][] rankCount = new int[names.length][numberOfPlayers];
         if (numberOfPlayers == 3) {
             System.out.println("RESULT");
             int[][][] resultArray = new int[names.length][names.length][names.length];
             for (Result result : resultList) {
                 int[] id = result.playerID;
                 int[] score = result.playerPoints;
+                int[] rank = result.rank;
 
                 resultArray[id[0]][id[1]][id[2]] = score[0];
                 resultArray[id[1]][id[0]][id[2]] = score[1];
                 resultArray[id[2]][id[0]][id[1]] = score[2];
+
+                for (int k = 0; k < rank.length; k++) {
+                    rankCount[id[k]][rank[k]]++;
+                }
             }
             System.out.printf("%22s", "");
             for (int j = 0; j < names.length; j++) {
@@ -427,6 +433,7 @@ public class VoronoiGame {
                     System.out.printf("(%d-%d)", j, k);
                 }
             }
+            System.out.printf("  | r1 r2 r3 (times)");
             System.out.println();
             for (int i = 0; i < names.length; i++) {
                 System.out.printf("%3d,%18s ", i, names[i]);
@@ -434,6 +441,11 @@ public class VoronoiGame {
                     for (int k = j + 1; k < names.length; k++) {
                         System.out.printf("%4d ", resultArray[i][j][k]);
                     }
+
+                }
+                System.out.printf(" | ");
+                for (int k = 0; k < rankCount[i].length; k++) {
+                    System.out.printf("%2d ", rankCount[i][k]);
                 }
                 System.out.println();
             }
@@ -453,6 +465,7 @@ public class VoronoiGame {
                     pw.printf(",(%d-%d)", j, k);
                 }
             }
+            pw.printf(",r1,r2,r3,(times)");
             pw.println();
             for (int i = 0; i < names.length; i++) {
                 pw.printf("%d,%s,", i, names[i]);
@@ -460,6 +473,9 @@ public class VoronoiGame {
                     for (int k = j + 1; k < names.length; k++) {
                         pw.printf("%d,", resultArray[i][j][k]);
                     }
+                }
+                for (int k = 0; k < rankCount[i].length; k++) {
+                    pw.printf("%d,", rankCount[i][k]);
                 }
                 pw.println();
             }
@@ -470,19 +486,29 @@ public class VoronoiGame {
             for (Result result : resultList) {
                 int[] id = result.playerID;
                 int[] score = result.playerPoints;
+                int[] rank = result.rank;
 
                 resultArray[id[0]][id[1]] = score[0];
                 resultArray[id[1]][id[0]] = score[1];
+
+                for (int k = 0; k < rank.length; k++) {
+                    rankCount[id[k]][rank[k]]++;
+                }
             }
             System.out.printf("%23s", "");
             for (int j = 0; j < names.length; j++) {
                 System.out.printf("%4d ", j);
             }
+            System.out.printf(" | r1 r2 (times)");
             System.out.println();
             for (int i = 0; i < names.length; i++) {
                 System.out.printf("%3d,%18s ", i, names[i]);
                 for (int j = 0; j < names.length; j++) {
                     System.out.printf("%4d ", resultArray[i][j]);
+                }
+                System.out.printf(" | ");
+                for (int k = 0; k < rankCount[i].length; k++) {
+                    System.out.printf("%2d ", rankCount[i][k]);
                 }
                 System.out.println();
             }
@@ -500,11 +526,15 @@ public class VoronoiGame {
             for (int j = 0; j < names.length; j++) {
                 pw.printf(",%d", j);
             }
+            pw.printf(",r1,r2,(times)");
             pw.println();
             for (int i = 0; i < names.length; i++) {
                 pw.printf("%d,%s,", i, names[i]);
                 for (int j = 0; j < names.length; j++) {
                     pw.printf("%d,", resultArray[i][j]);
+                }
+                for (int k = 0; k < rankCount[i].length; k++) {
+                    pw.printf("%d,", rankCount[i][k]);
                 }
                 pw.println();
             }
@@ -639,16 +669,54 @@ public class VoronoiGame {
         String[] names;
         int[] playerPoints;
         int[] playerID;
+        int[] rank;
 
         Result(String[] names, int[] playerPoints) {
             this.names = names;
             this.playerPoints = playerPoints;
+            rank = new int[names.length];
+            setRank();
         }
 
         void setPlayerID(int[] id) {
             playerID = new int[id.length];
             for (int i = 0; i < id.length; i++) {
                 playerID[i] = id[i];
+            }
+        }
+
+        void setRank() {
+            List<NumberPair> dict = new ArrayList<>();
+            for (int i = 0; i < names.length; i++) {
+                dict.add(new NumberPair(i, playerPoints[i]));
+            }
+            dict.sort((a, b) -> b.num - a.num);
+            int[] point = new int[numberOfPlayers];
+            if (numberOfPlayers == 2) {
+                NumberPair numpair = dict.get(0);
+                rank[numpair.key] = 0;
+                if (numpair.num != dict.get(1).num) {
+                    rank[numpair.key] = 1;
+                } else {
+                    rank[numpair.key] = 0;
+                }
+            } else if (numberOfPlayers == 3) {
+                int[] score = new int[] { 0, 1, 2 };
+                int beforeNum = dict.get(0).num;
+                int index = 0;
+                NumberPair numpair = dict.get(0);
+                rank[numpair.key] = score[index];
+
+                for (int i = 1; i < numberOfPlayers; i++) {
+                    numpair = dict.get(i);
+                    if (beforeNum != numpair.num) {
+                        beforeNum = numpair.num;
+                        index = i;
+                    }
+                    rank[numpair.key] = score[index];
+
+                }
+
             }
         }
     }
