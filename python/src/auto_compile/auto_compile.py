@@ -35,7 +35,7 @@ def compile(file):
 	if not fname.startswith("P_"):
 		return
 	if ext == '.java':
-		cmd = 'javac -classpath ai_programs/ ' + file
+		cmd = 'javac -encoding UTF-8 -classpath ai_programs/ ' + file
 		err = subprocess.call(cmd, shell=True)
 		if err == 0:
 			runcmd = 'java -classpath '+ directory + ' ' + fname
