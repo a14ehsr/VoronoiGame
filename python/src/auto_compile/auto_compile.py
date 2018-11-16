@@ -44,7 +44,7 @@ def compile(file):
 		else:
 			errf.write('COMPILE_ERROR '+file+'\n')
 	elif ext in {'.cpp', '.c'}:
-		cmd = 'g++-7 ' + file + " -o " + root
+		cmd = cpp_compiler+' ' + file + " -o " + root
 		err = subprocess.call(cmd, shell=True)
 		if err == 0:
 			runcmd = root
