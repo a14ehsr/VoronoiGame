@@ -4,14 +4,14 @@ playerName = "P_SamplePython"
 numberOfPlayers = int(sys.stdin.readline())
 numberOfGames = int(sys.stdin.readline())
 numberOfSelectNodes = int(sys.stdin.readline())
-sys.stderr.write("nosn"+str(numberOfSelectNodes)+"\n")
 patternSize = int(sys.stdin.readline())
-sys.stderr.write("ptnsize"+str(patternSize)+"\n")
 playerCode = int(sys.stdin.readline())
 numberOfNodes = 0
 numberOfEdges = 0
 edges = []
 weight = []
+print(playerName, flush=True);
+
 def loadGraph():
     global numberOfNodes
     global numberOfEdges
@@ -20,8 +20,6 @@ def loadGraph():
     weight = [int(sys.stdin.readline()) for i in range(numberOfNodes)]
     edges = [[int(sys.stdin.readline()), int(sys.stdin.readline())] for i in range(numberOfEdges)]
     
-print(playerName, flush = True);
-
 def select(record, game, s):
     while True:
         node = int(random.random()*numberOfNodes)
