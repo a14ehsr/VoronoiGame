@@ -20,7 +20,7 @@ def loadGraph():
     weight = [int(sys.stdin.readline()) for i in range(numberOfNodes)]
     edges = [[int(sys.stdin.readline()), int(sys.stdin.readline())] for i in range(numberOfEdges)]
     
-def select(record, game, s):
+def select(record, game, s, sequence):
     while True:
         node = int(random.random()*numberOfNodes)
         if record[game][s][node][0] == -1:
@@ -38,7 +38,7 @@ for i in range(numberOfGames):
             for p in sequence:
                 selectNode = -1
                 if p == playerCode:
-                    selectNode = select(gameRecord, i,s)
+                    selectNode = select(gameRecord, i,s, sequence)
                     print(selectNode, flush = True)
                 else:
                     selectNode = int(sys.stdin.readline())

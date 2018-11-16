@@ -24,7 +24,7 @@ public class P_Sample {
      * @param game   ゲーム数
      * @return 選択ノード番号
      */
-    private int select(int[][][][] record, int game, int sequenceNumber) {
+    private int select(int[][][][] record, int game, int sequenceNumber, List<Integer> sequence) {
         while (true) {
             int selectNode = (int) (Math.random() * numberOfNodes);
             if (record[game][sequenceNumber][selectNode][0] == -1) {
@@ -69,7 +69,7 @@ public class P_Sample {
                     for (int p : sequence) {
                         int selectNode;
                         if (p == playerCode) {
-                            selectNode = select(gameRecord, i, s);
+                            selectNode = select(gameRecord, i, s, sequence);
                             System.out.println(selectNode);
                         } else {
                             selectNode = sc.nextInt();

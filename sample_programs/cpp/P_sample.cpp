@@ -12,7 +12,7 @@ std::string playerName = "P_SampleCpp";
 
 void initialize();
 void loadGraph();
-int select(int ****gameRecord, int game, int sequenceNumber);
+int select(int ****gameRecord, int game, int sequenceNumber, int *sequence);
 int main(void)
 {
     initialize();
@@ -53,7 +53,7 @@ int main(void)
                     int selectNode;
                     if (p == playerCode)
                     {
-                        selectNode = select(gameRecord, i, s);
+                        selectNode = select(gameRecord, i, s, sequence);
                         std::cout << selectNode << std::endl;
                     }
                     else
@@ -67,7 +67,7 @@ int main(void)
         }
     }
 }
-int select(int ****record, int game, int sequenceNumber)
+int select(int ****record, int game, int sequenceNumber, int *sequence)
 {
     while (true)
     {
