@@ -11,8 +11,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
-import javafx.scene.layout.Border;
-
 public class GraphDrawing {
     private JFrame frame;
     private JPanel panel;

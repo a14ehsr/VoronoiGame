@@ -6,7 +6,6 @@
 #ai_programのディレクトリのみ残して，中身は除外する
 ai_programs/*
 !ai_programs/.gitkeep
-!ai_programs/debug_programs
 resource/command_list/*
 !resource/command_list/.gitkeep
 resource/log/auto_compile/*
