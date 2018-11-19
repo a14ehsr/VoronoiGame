@@ -3,7 +3,7 @@ Copyright © 2018年 K.Hirano All rights reserved.
 
 作成日2018/11/08 
 
-最終更新日2018/11/18
+最終更新日2018/11/20
 
 
 
@@ -28,25 +28,41 @@ Copyright © 2018年 K.Hirano All rights reserved.
 
 ここでは，環境の準備をしながら対戦の実行方法の一例を紹介します．
 
-### 1.0 ターミナル
+### 1.1 実行環境構築
 
-ターミナルを使える環境を用意してください．なお，shellが使えると嬉しいです．
+- Java1.8以降のインストール
+- Python3系のインストール（Anacondaを推奨）
+- busyboxのダウンロード（Windowsの場合）
 
-Cygwinなどで問題ないはずです．
+#### 補足とbusyboxのダウンロード
 
-### 1.1 clone
+busyboxをダウンロードするのは，Linuxライクに使えるターミナルを利用したいからです．
+
+MacやLinuxを使用する場合には不要です．
+
+他にCygwinや統合ターミナルを持つVSCodeなどもありますが，busyboxを推奨します．
+
+以下の記事を参考にしながら，busybox64.exeをダウンロードしてください．
+
+https://qiita.com/tetsuy/items/22cba0bc2048967b270a
+
+
+
+### 1.2 clone
 
 ターミナルで以下を実行
 
 `git clone https://github.com/a14ehsr/VoronoiGame.git`
 
-もしくはdownload zipからダウンロードしてホームディレクトリ上に解凍してください．  
+もしくはdownload zipからダウンロードして適当なディレクトリに解凍してください．  
 
 ### 1.2 カレントディレクトリを移動
 
 ターミナルで以下を実行
 
 `cd VoronoiGame`
+
+Download zipした場合は適当な方法でVoronoiGameのディレクトリに移動してください．
 
 
 
