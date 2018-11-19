@@ -52,7 +52,7 @@ def compile(file):
 		else:
 			errf.write('COMPILE_ERROR '+file+'\n')
 	elif ext == '.py':
-		runcmd = 'python ' + file
+		runcmd = 'python3 ' + file
 		cmdf.write(runcmd + '\n')
 
 cmdf = open('resource/command_list/command_list.txt', mode='w')
