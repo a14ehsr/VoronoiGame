@@ -1,3 +1,5 @@
 #!/bin/sh
 
-python3 python/src/auto_compile/auto_compile.py
+DATA=`cat resource/setting/python_command.txt`
+
+${DATA} python/src/auto_compile/auto_compile.py

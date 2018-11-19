@@ -9,7 +9,8 @@ def find_all_files(directory):
         for file in files:
             yield os.path.join(root, file)
 
-compiler_setting_file = open('resource/setting/compiler_setting.txt','r')
+compiler_setting_file = open('resource/setting/compiler_setting.txt', 'r')
+python_command_setting_file = open('resource/setting/python_command.txt', 'r')
 #for line in compiler_setting_file:
 #  print(line)
 lines = compiler_setting_file.readlines()
@@ -25,6 +26,10 @@ if line1[0] == '.cpp':
 else:
 	print('コンパイラ設定ファイルが破損しています．')
 compiler_setting_file.close()
+
+pycom = python_command_setting_file.readline().replace('\n','')
+
+python_command_setting_file.close
 
 print('.cコンパイラ  :'+c_compiler)
 print('.cppコンパイラ:'+cpp_compiler)
@@ -52,7 +57,7 @@ def compile(file):
 		else:
 			errf.write('COMPILE_ERROR '+file+'\n')
 	elif ext == '.py':
-		runcmd = 'python3 ' + file
+		runcmd = pycom+' ' + file
 		cmdf.write(runcmd + '\n')
 
 cmdf = open('resource/command_list/command_list.txt', mode='w')
