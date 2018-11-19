@@ -236,11 +236,11 @@ public class VoronoiGame {
                     }
                     System.out.print(") = ");
                     for (int num : gainRecord[i][s]) {
-                        System.out.print(num + " ");
+                        System.out.printf("%3d ", num);
                     }
                     System.out.print(" | 点数: ");
                     for (int num : gamePoint) {
-                        System.out.print(num + " ");
+                        System.out.printf("%3d ", num);
                     }
                     System.out.println();
 
