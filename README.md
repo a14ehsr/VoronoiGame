@@ -102,11 +102,15 @@ sh shell/compile.sh
 
 以下を実行することで，`ai_programs`内の`P_`から始まるプログラムを自動でコンパイルし，
 
-実行コマンドリストのテキストファイルを生成する．
+実行コマンドリストのテキストファイルを生成します．
 
 ```a
 sh shell/auto_compile.sh
 ```
+
+##### python3コマンドが無いというエラーが出た場合
+
+Windows環境でAnacondaをインストールした場合に，`python3`コマンドが生成されていない場合が確認されています．その場合には，`resoruce/setting/python/run_command.txt`の`python3`を`python`に書き換えてください．（ただし，`python`コマンドが使えることは先に確認してください．）
 
 
 
