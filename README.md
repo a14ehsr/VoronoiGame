@@ -76,9 +76,9 @@ VoronoiGameのディレクトリまで移動してください．
 
 `sample_programs`に各言語のサンプルが用意されているので，
 
-プログラムをプールするディレクトリの`ai_programs` にコピーする．
+プログラムをプールするディレクトリの`ai_programs` にコピーします．
 
-以下を実行すれば良い．
+以下を実行すれば良いです．
 
 ```
 cp sample_programs/cpp/P_sample.cpp ai_programs/
@@ -327,16 +327,17 @@ sh shell/run_sample_visible.sh 実行コマンド
 sh shell/run_normal.sh
 ```
 
-| オプション  | 説明                                                         | default |
-| ----------- | ------------------------------------------------------------ | ------: |
-| -p str      | 実行コマンドリストにstrを追加する                            |       - |
-| -nop num    | 対戦人数をnumに設定する                                      |       2 |
-| -nosn num   | 1ゲームの選択ノード数をnumに設定する                         |       7 |
-| -game num   | ゲーム数を設定する                                           |      30 |
-| -v bool     | 描画を行う<br />（ゲーム数やAIの数が多い時は終わらなくなるかもしれないので注意） |   false |
-| -olevel num | 出力レベルをnumに設定する                                    |       1 |
-| -auto bool  | resource/command_list/command_list_green.txtの<br />実行コマンドを実行コマンドリストに追加する．<br />trueの場合，サンプルプログラムを一緒に追加する． |       - |
-| -test num   | resource/command_list/command_list.txtの実行コマンドを<br />の実行コマンドとサンプルプログラムでnum回ゲームを行う． |       - |
+| オプション   | 説明                                                         | default |
+| ------------ | ------------------------------------------------------------ | ------: |
+| -p str       | 実行コマンドリストにstrを追加する                            |       - |
+| -nop num     | 対戦人数をnumに設定する                                      |       2 |
+| -nosn num    | 1ゲームの選択ノード数をnumに設定する                         |       7 |
+| -game num    | ゲーム数を設定する                                           |      30 |
+| -v bool      | 描画を行う<br />（ゲーム数やAIの数が多い時は終わらなくなるかもしれないので注意） |   false |
+| -olevel num  | 出力レベルをnumに設定する                                    |       1 |
+| -sample bool | trueの場合に対戦プログラムにサンプルAIを追加します．         |   false |
+| -auto bool   | resource/command_list/command_list_green.txtの<br />実行コマンドを実行コマンドリストに追加する．<br />trueの場合，サンプルプログラムを一緒に追加する． |       - |
+| -test num    | resource/command_list/command_list.txtの実行コマンドを<br />の実行コマンドとサンプルプログラムでnum回ゲームを行う． |       - |
 
 また，出力レベルは以下の通りである．
 
