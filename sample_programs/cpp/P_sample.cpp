@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdlib.h>
 int numberOfPlayers;
 int numberOfGames;
 int numberOfSelectNodes; // 1ゲームで選択するノード
@@ -46,6 +47,7 @@ int main(void)
             // 選択ノード数分のループ
             for (int j = 0; j < numberOfSelectNodes; j++)
             {
+                std::cerr << j;
 
                 for (int pi = 0; pi < numberOfPlayers; pi++)
                 {

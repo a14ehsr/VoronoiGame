@@ -171,6 +171,8 @@ public class VoronoiGame {
                     // 各プレイヤーのループ
                     for (int p : sequence) {
                         // それぞれの数字を取得
+                        if (!processes[p].isAlive())
+                            throw new IOException("次のプレイヤーのサブプロセスが停止しました :" + names[p]);
                         Thread thread = new GetResponseThread(p);
                         thread.start();
                         try {
@@ -179,8 +181,6 @@ public class VoronoiGame {
                             e.printStackTrace();
                         }
 
-                        if (!processes[p].isAlive())
-                            throw new IOException("次のプレイヤーのサブプロセスが停止しました :" + names[p]);
                         if (outputStr[p] == null)
                             throw new TimeoutException("一定時間以内に次のプレイヤーから値を取得できませんでした :" + names[p]);
 
