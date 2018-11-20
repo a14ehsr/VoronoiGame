@@ -58,6 +58,7 @@ class Setting {
         sampleCommandList.add(common + "P_Random");
         sampleCommandList.add(common + "P_Max");
         sampleCommandList.add(common + "P_4Neighbours");
+        sampleCommandList.add(common + "P_Chaise");
     }
 
     List<String> getSampleCommandList() {

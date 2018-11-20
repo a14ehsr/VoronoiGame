@@ -8,5 +8,6 @@ ${command} ${options} ac/a14ehsr/platform/VoronoiGame.java
 ${command} ${options} ac/a14ehsr/sample_ai/P_Random.java
 ${command} ${options} ac/a14ehsr/sample_ai/P_Max.java
 ${command} ${options} ac/a14ehsr/sample_ai/P_4Neighbours.java
+${command} ${options} ac/a14ehsr/sample_ai/P_Chaise.java
 
 cd ../../
