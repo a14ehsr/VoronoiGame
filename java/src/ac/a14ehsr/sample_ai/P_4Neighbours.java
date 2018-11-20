@@ -78,6 +78,12 @@ public class P_4Neighbours {
                             }
                             selectNode = np.key;
                             System.out.println(selectNode);
+                            decreaseValue(value, selectNode / 10, selectNode % 10);
+                            originalWightList.clear();
+                            for (int t = 0; t < numberOfNodes; t++) {
+                                originalWightList.add(new NumPair(t, value[t / 10][t % 10]));
+                            }
+                            originalWightList.sort((a, b) -> b.num - a.num);
                         } else {
                             selectNode = sc.nextInt();
                         }
@@ -86,6 +92,21 @@ public class P_4Neighbours {
                     }
                 }
             }
+        }
+    }
+
+    private void decreaseValue(int[][] value, int row,int col) {
+        if (row > 0) {
+            value[row - 1][col] -= weight[row][col];
+        }
+        if (row < 9) {
+            value[row + 1][col] -= weight[row][col];
+        }
+        if (col > 0) {
+            value[row][col - 1] -= weight[row][col];
+        }
+        if (col < 9) {
+            value[row][col + 1] -= weight[row][col];
         }
     }
 

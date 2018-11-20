@@ -193,6 +193,12 @@ class Setting {
             case "-game":
                 numberOfGames = Integer.parseInt(options[i + 1]);
                 break;
+
+            case "-sample":
+                if ("true".equals(options[i + 1])) {
+                    commandList.addAll(sampleCommandList);
+                }
+                break;
             case "-v":
                 if ("true".equals(options[i + 1])) {
                     visible = true;
