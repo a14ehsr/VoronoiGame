@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 command=`cat resource/setting/python/run_command.txt`
 

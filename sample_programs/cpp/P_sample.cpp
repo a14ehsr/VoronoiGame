@@ -47,8 +47,6 @@ int main(void)
             // 選択ノード数分のループ
             for (int j = 0; j < numberOfSelectNodes; j++)
             {
-                std::cerr << j;
-
                 for (int pi = 0; pi < numberOfPlayers; pi++)
                 {
                     int p = sequence[pi];

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 command=`cat resource/setting/java/compile_command.txt`
 options=`cat resource/setting/java/compile_options.txt`
