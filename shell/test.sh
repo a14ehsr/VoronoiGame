@@ -1,3 +1,5 @@
 #!/bin/sh
 
-java -classpath java/src ac.a14ehsr.platform.VoronoiGame -test 3
+command=`cat resource/setting/java_run_command.txt`
+options=`cat resource/setting/java_run_options.txt`
+${command} ${options} -classpath java/src ac.a14ehsr.platform.VoronoiGame -test 3

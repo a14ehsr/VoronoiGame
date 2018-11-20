@@ -1,5 +1,5 @@
 #!/bin/sh
 
-DATA=`cat resource/setting/python_command.txt`
+command=`cat resource/setting/python_command.txt`
 
-${DATA} python/src/auto_compile/auto_compile.py
+${command} python/src/auto_compile/auto_compile.py

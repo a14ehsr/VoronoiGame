@@ -1,9 +1,11 @@
 #!/bin/bash
 
+command=`cat resource/setting/java_run_command.txt`
+options=`cat resource/setting/java_run_options.txt`
 if [ $1 -eq 2 ]; then
-  java -classpath java/src ac.a14ehsr.platform.VoronoiGame -p "$2" -p "$3"
+  ${command} ${options} -classpath java/src ac.a14ehsr.platform.VoronoiGame -p "$2" -p "$3"
 fi
 
 if [ $1 -eq 3 ]; then
-  java -classpath java/src ac.a14ehsr.platform.VoronoiGame -p "$2" -p "$3" -p "$4" -nop 3 -nosn 5 -game 10
+  ${command} ${options} -classpath java/src ac.a14ehsr.platform.VoronoiGame -p "$2" -p "$3" -p "$4" -nop 3 -nosn 5 -game 10
 fi
