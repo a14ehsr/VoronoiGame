@@ -9,30 +9,32 @@ def find_all_files(directory):
         for file in files:
             yield os.path.join(root, file)
 
-compiler_setting_file = open('resource/setting/compiler_setting.txt', 'r')
-python_command_setting_file = open('resource/setting/python_command.txt', 'r')
-#for line in compiler_setting_file:
-#  print(line)
-lines = compiler_setting_file.readlines()
-print(lines)
-line0 = lines[0].split(' ')
-if line0[0] == '.c':
-	c_compiler = line0[1].replace('\n', '')
-else:
-	print('コンパイラ設定ファイルが破損しています．')
-line1 = lines[1].split(' ')
-if line1[0] == '.cpp':
-	cpp_compiler = line1[1].replace('\n', '')
-else:
-	print('コンパイラ設定ファイルが破損しています．')
-compiler_setting_file.close()
+def oneLineRead(path):
+	file = open(path, 'r')
+	str = file.readline().replace('\n', '')
+	file.close()
+	return str
 
-pycom = python_command_setting_file.readline().replace('\n','')
+compiler_setting_path = 'resource/setting/'
+c_compile_command = oneLineRead(compiler_setting_path + 'c/compile_command.txt')
+c_compile_options = oneLineRead(compiler_setting_path + 'c/compile_options.txt')
+cpp_compile_command = oneLineRead(compiler_setting_path + 'cpp/compile_command.txt')
+cpp_compile_options = oneLineRead(compiler_setting_path + 'cpp/compile_options.txt')
+java_compile_command = oneLineRead(compiler_setting_path + 'java/compile_command.txt')
+java_compile_options = oneLineRead(compiler_setting_path + 'java/compile_options.txt')
+java_run_command = oneLineRead(compiler_setting_path + 'java/run_command.txt')
+java_run_options = oneLineRead(compiler_setting_path + 'java/run_options.txt')
+python_run_command = oneLineRead(compiler_setting_path + 'python/run_command.txt')
 
-python_command_setting_file.close
-
-print('.cコンパイラ  :'+c_compiler)
-print('.cppコンパイラ:'+cpp_compiler)
+print('c_compile_command : ', c_compile_command)
+print('c_compile_options : ', c_compile_options)
+print('cpp_compile_command : ', cpp_compile_command)
+print('cpp_compile_options : ', cpp_compile_options)
+print('java_compile_command : ', java_compile_command)
+print('java_compile_ options : ', java_compile_options)
+print('java_run_command : ', java_run_command)
+print('java_run_ options : ', java_run_options)
+print('python_run_command : ',python_run_command)
 
 def compile(file):
 	root, ext = os.path.splitext(file)
@@ -40,16 +42,26 @@ def compile(file):
 	if not fname.startswith("P_"):
 		return
 	if ext == '.java':
-		cmd = 'javac -encoding UTF-8 -classpath ai_programs/ ' + file
+		cmd = java_compile_command + ' '+ java_compile_options + ' -classpath ai_programs/ ' + file
 		err = subprocess.call(cmd, shell=True)
 		if err == 0:
-			runcmd = 'java -classpath '+ directory + ' ' + fname
+			runcmd = java_run_command + ' ' + java_run_options + ' -classpath ' + directory + ' ' + fname
 			cmdf.write(runcmd + '\n')
 			#f.write(runcmd+'\n')
 		else:
-			errf.write('COMPILE_ERROR '+file+'\n')
-	elif ext in {'.cpp', '.c'}:
-		cmd = cpp_compiler+' ' + file + " -o " + root
+			errf.write('COMPILE_ERROR ' + file + '\n')
+			
+	elif ext == '.c':
+		cmd = c_compile_command + ' ' + c_compile_options + ' ' + file + " -o " + root
+		err = subprocess.call(cmd, shell=True)
+		if err == 0:
+			runcmd = root
+			cmdf.write(runcmd + '\n')
+		else:
+			errf.write('COMPILE_ERROR ' + file + '\n')
+
+	elif ext == '.cpp':
+		cmd = cpp_compile_command + ' ' + cpp_compile_options + ' ' +  file + " -o " + root
 		err = subprocess.call(cmd, shell=True)
 		if err == 0:
 			runcmd = root
@@ -57,7 +69,7 @@ def compile(file):
 		else:
 			errf.write('COMPILE_ERROR '+file+'\n')
 	elif ext == '.py':
-		runcmd = pycom+' ' + file
+		runcmd = python_run_command + ' ' + file
 		cmdf.write(runcmd + '\n')
 
 cmdf = open('resource/command_list/command_list.txt', mode='w')

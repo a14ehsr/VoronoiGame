@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.io.File;
+import java.io.IOException;
 
 /**
  * プラットフォームのコマンドライン引数を受け取って諸々の処理をするクラス パラメータは
@@ -37,8 +38,23 @@ class Setting {
             e.printStackTrace();
             System.exit(0);
         }
-
-        String common = "java -classpath java/src/ ac.a14ehsr.sample_ai.";
+        String javaRunCommand = "";
+        String javaRunOptions = "";
+        try{
+            Scanner tmpsc = new Scanner(new File("resource/setting/java/run_command.txt"));
+            javaRunCommand = tmpsc.next();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            Scanner tmpsc = new Scanner(new File("resource/setting/java/run_options.txt"));
+            if (tmpsc.hasNext()) {
+                javaRunOptions = tmpsc.next();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String common = javaRunCommand + " " + javaRunOptions + " -classpath java/src/ ac.a14ehsr.sample_ai.";
         sampleCommandList.add(common + "P_Random");
     }
 

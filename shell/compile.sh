@@ -1,7 +1,7 @@
 #!/bin/sh
 
-command=`cat resource/setting/java_compile_command.txt`
-options=`cat resource/setting/java_compile_options.txt`
+command=`cat resource/setting/java/compile_command.txt`
+options=`cat resource/setting/java/compile_options.txt`
 cd java/src
 
 ${command} ${options} ac/a14ehsr/platform/VoronoiGame.java
