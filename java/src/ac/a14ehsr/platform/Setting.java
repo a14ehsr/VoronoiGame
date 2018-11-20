@@ -40,7 +40,7 @@ class Setting {
         }
         String javaRunCommand = "";
         String javaRunOptions = "";
-        try{
+        try {
             Scanner tmpsc = new Scanner(new File("resource/setting/java/run_command.txt"));
             javaRunCommand = tmpsc.next();
         } catch (IOException e) {
@@ -56,6 +56,7 @@ class Setting {
         }
         String common = javaRunCommand + " " + javaRunOptions + " -classpath java/src/ ac.a14ehsr.sample_ai.";
         sampleCommandList.add(common + "P_Random");
+        sampleCommandList.add(common + "P_Max");
     }
 
     List<String> getSampleCommandList() {
