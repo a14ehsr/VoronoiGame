@@ -696,9 +696,9 @@ public class VoronoiGame {
                 NumberPair numpair = dict.get(0);
                 rank[numpair.key] = 0;
                 if (numpair.num != dict.get(1).num) {
-                    rank[numpair.key] = 1;
+                    rank[dict.get(1).key] = 1;
                 } else {
-                    rank[numpair.key] = 0;
+                    rank[dict.get(1).key] = 0;
                 }
             } else if (numberOfPlayers == 3) {
                 int[] score = new int[] { 0, 1, 2 };
@@ -716,7 +716,6 @@ public class VoronoiGame {
                     rank[numpair.key] = score[index];
 
                 }
-
             }
         }
     }
