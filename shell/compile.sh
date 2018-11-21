@@ -10,5 +10,6 @@ ${command} ${options} ac/a14ehsr/sample_ai/P_Max.java
 ${command} ${options} ac/a14ehsr/sample_ai/P_4Neighbours.java
 ${command} ${options} ac/a14ehsr/sample_ai/P_8Neighbours.java
 ${command} ${options} ac/a14ehsr/sample_ai/P_Chaise.java
+${command} ${options} ac/a14ehsr/sample_ai/P_Copy.java
 
 cd ../../

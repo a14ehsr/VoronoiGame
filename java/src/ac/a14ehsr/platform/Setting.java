@@ -60,6 +60,7 @@ class Setting {
         sampleCommandList.add(common + "P_4Neighbours");
         sampleCommandList.add(common + "P_8Neighbours");
         sampleCommandList.add(common + "P_Chaise");
+        sampleCommandList.add(common + "P_Copy");
     }
 
     List<String> getSampleCommandList() {
