@@ -128,38 +128,62 @@ public class P_Copy {
         }
     }
 
-    private void decreaseValue(int[][] value, int row,int col) {
+    private void decreaseValue(int[][] value, int row, int col) {
         if (row > 0) {
-            value[row - 1][col] -= weight[row][col];
+            value[row - 1][col] -= 2 * weight[row][col];
+            if (col > 0) {
+                value[row - 1][col - 1] -= weight[row][col];
+            }
+            if (col < 9) {
+                value[row - 1][col + 1] -= weight[row][col];
+            }
         }
         if (row < 9) {
-            value[row + 1][col] -= weight[row][col];
+            value[row + 1][col] -= 2 * weight[row][col];
+            if (col > 0) {
+                value[row + 1][col - 1] -= weight[row][col];
+            }
+            if (col < 9) {
+                value[row + 1][col + 1] -= weight[row][col];
+            }
         }
         if (col > 0) {
-            value[row][col - 1] -= weight[row][col];
+            value[row][col - 1] -= 2 * weight[row][col];
         }
         if (col < 9) {
-            value[row][col + 1] -= weight[row][col];
+            value[row][col + 1] -= 2 * weight[row][col];
         }
     }
 
     private void calcValue(int[][] value) {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                value[i][j] = 2 * weight[i][j];
+                value[i][j] = 3 * weight[i][j];
                 if (i > 0) {
-                    value[i][j] += weight[i - 1][j];
+                    value[i][j] += 2 * weight[i - 1][j];
+                    if (j > 0) {
+                        value[i][j] += weight[i - 1][j - 1];
+                    }
+                    if (j < 9) {
+                        value[i][j] += weight[i - 1][j + 1];
+                    }
                 }
                 if (i < 9) {
-                    value[i][j] += weight[i + 1][j];
+                    value[i][j] += 2 * weight[i + 1][j];
+                    if (j > 0) {
+                        value[i][j] += weight[i + 1][j - 1];
+                    }
+                    if (j < 9) {
+                        value[i][j] += weight[i + 1][j + 1];
+                    }
                 }
                 if (j > 0) {
-                    value[i][j] += weight[i][j - 1];
+                    value[i][j] += 2 * weight[i][j - 1];
                 }
                 if (j < 9) {
-                    value[i][j] += weight[i][j + 1];
+                    value[i][j] += 2 * weight[i][j + 1];
                 }
-            } 
+            }
         }
     }
 
