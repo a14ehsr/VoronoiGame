@@ -56,7 +56,6 @@ public class P_Chaise {
                 return np.key;
             }
         }
-        System.err.println("CCC");
 
         while (true) {
             int selectNode = (int) (Math.random() * numberOfNodes);
