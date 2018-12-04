@@ -15,6 +15,7 @@ print(playerName, flush=True);
 def loadGraph():
     global numberOfNodes
     global numberOfEdges
+    global weight
     numberOfNodes = int(sys.stdin.readline())
     numberOfEdges = int(sys.stdin.readline())
     weight = [int(sys.stdin.readline()) for i in range(numberOfNodes)]
