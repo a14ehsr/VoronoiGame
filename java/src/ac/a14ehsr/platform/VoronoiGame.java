@@ -233,7 +233,7 @@ public class VoronoiGame {
                 if (outputLevel >= 2) {
                     System.out.printf("%2dゲーム，順列種%2d番の利得 (", i, s);
                     for (int a = 0; a < numberOfPlayers; a++) {
-                        System.out.print(names[sequence[a]] + " ");
+                        System.out.print("["+sequence[a]+"]"+names[a] + " ");
                     }
                     
                     System.out.print(") = ");
