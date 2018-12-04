@@ -154,6 +154,7 @@ public class VoronoiGame {
 
             }
             for (int s = 0; s < sequenceList.size(); s++) {
+
                 int[] sequence = sequenceList.get(s);
                 for (int p = 0; p < numberOfPlayers; p++) {
                     for (int num : sequence) {
@@ -231,9 +232,10 @@ public class VoronoiGame {
                 int[] gamePoint = calcPoint(gainRecord[i][s]);
                 if (outputLevel >= 2) {
                     System.out.printf("%2dゲーム，順列種%2d番の利得 (", i, s);
-                    for (String name : names) {
-                        System.out.print(name + " ");
+                    for (int a = 0; a < numberOfPlayers; a++) {
+                        System.out.print(names[sequence[a]] + " ");
                     }
+                    
                     System.out.print(") = ");
                     for (int num : gainRecord[i][s]) {
                         System.out.printf("%3d ", num);
