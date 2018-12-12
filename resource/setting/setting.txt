@@ -1,4 +1,4 @@
 numberOfPlayers 2
 numberOfGames 30
 numberOfSelectNodes 7
-outputlevel 1
+outputlevel 2
