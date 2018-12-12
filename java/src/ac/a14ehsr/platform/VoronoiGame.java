@@ -287,8 +287,17 @@ public class VoronoiGame {
             if (numpair.num != dict.get(1).num) {
                 point[numpair.key]++;
             }
-        } else if (numberOfPlayers == 3) {
-            int[] score = new int[] { 5, 2, 0 };
+        } else if (numberOfPlayers >= 3) {
+            int[] score = null;
+            if (numberOfPlayers == 3) {
+                score = new int[] { 5, 2, 0 };
+            } else if (numberOfPlayers == 4) {
+                score = new int[] { 7, 4, 2, 0 };
+            } else if (numberOfPlayers == 5) {
+                score = new int[] { 8, 5, 3, 1, 0 };
+            } else {
+                score = new int[numberOfPlayers];
+            }
             int beforeNum = dict.get(0).num;
             int index = 0;
             NumberPair numpair = dict.get(0);
@@ -303,7 +312,6 @@ public class VoronoiGame {
                 point[numpair.key] = score[index];
 
             }
-
         }
         return point;
     }
@@ -557,7 +565,7 @@ public class VoronoiGame {
      */
     private void test() {
         List<String> commandList = setting.getCommandList();
-        List<String> sampleCommandList = setting.getSampleCommandList();
+        List<String> sampleCommandList = setting.getTestSampleCommandList();
         Logger testRunLogger = Logger.getLogger(VoronoiGame.class.getName());
         loggerInit(testRunLogger, "resource/log/test_run_err/err.log");
 

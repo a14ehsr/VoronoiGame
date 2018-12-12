@@ -7,5 +7,5 @@ if [ $1 -eq 2 ]; then
 fi
 
 if [ $1 -eq 3 ]; then
-  ${command} ${options} -classpath java/src ac.a14ehsr.platform.VoronoiGame -p "$2" -p "$3" -p "$4" -nop 3 -nosn 5 -game 10
+  ${command} ${options} -classpath java/src ac.a14ehsr.platform.VoronoiGame -p "$2" -p "$3" -p "$4" -nop 3
 fi

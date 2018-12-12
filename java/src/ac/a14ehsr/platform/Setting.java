@@ -15,6 +15,7 @@ import java.io.IOException;
 class Setting {
     private List<String> commandList;
     private List<String> sampleCommandList;
+    private List<String> testSampleCommandList;
     private int numberOfGames;
     private int numberOfSelectNodes;
     private int numberOfPlayers;
@@ -29,6 +30,7 @@ class Setting {
         isTest = false;
         commandList = new ArrayList<>();
         sampleCommandList = new ArrayList<>();
+        testSampleCommandList = new ArrayList<>();
 
         try {
             defaultSetting();
@@ -61,6 +63,10 @@ class Setting {
         sampleCommandList.add(common + "P_8Neighbours");
         sampleCommandList.add(common + "P_Chaise");
         sampleCommandList.add(common + "P_Copy");
+
+        testSampleCommandList.add(common + "P_8Neighbours");
+        testSampleCommandList.add(common + "P_Chaise");
+        testSampleCommandList.add(common + "P_Copy");
     }
 
     List<String> getSampleCommandList() {
@@ -69,6 +75,10 @@ class Setting {
 
     List<String> getCommandList() {
         return commandList;
+    }
+
+    List<String> getTestSampleCommandList() {
+        return testSampleCommandList;
     }
 
     /**
@@ -179,34 +189,45 @@ class Setting {
      * @throws Exception 範囲外アクセス，型変換例外
      */
     void setOption(final String[] options) throws NumberFormatException, ArrayIndexOutOfBoundsException {
-        for (int i = 0; i < options.length; i += 2) {
+        for (int i = 0; i < options.length;) {
             switch (options[i]) {
             case "-p":
                 commandList.add(options[i + 1]);
+                i += 2;
                 break;
 
             case "-nop":
                 numberOfPlayers = Integer.parseInt(options[i + 1]);
+                if (numberOfPlayers == 2) {
+                    numberOfGames = 30;
+                    numberOfSelectNodes = 7;
+                } else if (numberOfPlayers == 3) {
+                    numberOfGames = 10;
+                    numberOfSelectNodes = 5;
+                }
+                i += 2;
                 break;
 
             case "-nosn":
                 numberOfSelectNodes = Integer.parseInt(options[i + 1]);
+                i += 2;
                 break;
 
             case "-game":
                 numberOfGames = Integer.parseInt(options[i + 1]);
+                i += 2;
                 break;
 
             case "-sample":
-                if ("true".equals(options[i + 1])) {
-                    commandList.addAll(sampleCommandList);
-                }
+                commandList.addAll(sampleCommandList);
+                i++;
                 break;
+
             case "-v":
-                if ("true".equals(options[i + 1])) {
-                    visible = true;
-                }
+                visible = true;
+                i++;
                 break;
+
             case "-olevel":
                 int tmp = Integer.parseInt(options[i + 1]);
                 if (tmp > 3 || tmp < 1) {
@@ -215,6 +236,7 @@ class Setting {
                 } else {
                     outputLevel = tmp;
                 }
+                i += 2;
                 break;
 
             case "-auto":
@@ -222,14 +244,17 @@ class Setting {
                 if ("true".equals(options[i + 1])) {
                     commandList.addAll(sampleCommandList);
                 }
-
+                i += 2;
                 break;
+
             case "-test":
                 numberOfGames = Integer.parseInt(options[i + 1]);
                 isTest = true;
                 readCommandList(commandList, "resource/command_list/command_list.txt");
                 outputLevel = 0;
+                i += 2;
                 break;
+
             default:
                 throw new ArrayIndexOutOfBoundsException();
             }
