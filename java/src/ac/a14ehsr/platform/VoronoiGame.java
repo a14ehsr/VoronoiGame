@@ -42,7 +42,8 @@ public class VoronoiGame {
     int numberOfPlayers;
     Graph graph;
 
-    int timeout = 1000;
+    int timeLimit = 1000;
+    int timeOut = timeLimit + 1000;
 
     public VoronoiGame(String[] args) {
         // 各種設定と実行コマンド関連の処理
@@ -176,23 +177,25 @@ public class VoronoiGame {
                             throw new IOException("次のプレイヤーのサブプロセスが停止しました :" + names[p]);
                         Thread thread = new GetResponseThread(p);
                         thread.start();
+                        long start = System.nanoTime();
                         try {
-                            thread.join(timeout);
+                            thread.join(timeOut);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-
+                        long calculateTime = System.nanoTime() - start;
                         if (outputStr[p] == null)
                             throw new TimeoutException("一定時間以内に次のプレイヤーから値を取得できませんでした :" + names[p]);
 
                         int num;
                         try {
                             num = Integer.parseInt(outputStr[p]);
+                            outputStr[p] = null;
                         } catch (NumberFormatException e) {
                             throw new NumberFormatException(
                                     "次のプレイヤーから整数以外の値を取得しました :" + names[p] + " :" + outputStr[p]);
                         }
-                        gain(p, num, gameRecord[i][s], names[p]);
+                        gain(p, num, gameRecord[i][s], names[p], calculateTime);
 
                         gameRecord[i][s][num][1] = j;
                         for (int pp : sequence) {
@@ -339,9 +342,13 @@ public class VoronoiGame {
      * @param names  プレイヤーネーム
      * @throws AgainstTheRulesException ルール違反例外
      */
-    private void gain(int player, int node, int[][] record, String name) throws AgainstTheRulesException {
+    private void gain(int player, int node, int[][] record, String name, long calculateTime) throws AgainstTheRulesException {
         if (record[node][0] != -1) {
             throw new AgainstTheRulesException("次のプレイヤーが既に獲得されたノードを選択しました：" + name);
+        }
+        double overTime = calculateTime / 1.0e6 - timeLimit;
+        if (overTime > 0) {
+            throw new AgainstTheRulesException("次のプレイヤーが制限時間を"+String.format("%.3f",overTime)+"ミリ秒超えました．" + name);
         }
         record[node][0] = player;
     }
