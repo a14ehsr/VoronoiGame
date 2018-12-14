@@ -168,10 +168,7 @@ class Setting {
         if (args.length > 0) {
             try {
                 setOption(args);
-            } catch (NumberFormatException e) {
-                System.err.println(e);
-                System.out.println("オプションがおかしいです．");
-            } catch (ArrayIndexOutOfBoundsException e) {
+            } catch (Exception e) {
                 System.err.println(e);
                 System.out.println("オプションがおかしいです．");
             }
@@ -188,75 +185,79 @@ class Setting {
      * @return 成功か否か
      * @throws Exception 範囲外アクセス，型変換例外
      */
-    void setOption(final String[] options) throws NumberFormatException, ArrayIndexOutOfBoundsException {
+    void setOption(final String[] options) throws NumberFormatException, ArrayIndexOutOfBoundsException, OptionsException {
+        for (String str : options) {
+            System.out.println(str);
+        }
         for (int i = 0; i < options.length;) {
+            System.out.println(options[i]);
             switch (options[i]) {
-            case "-p":
-                commandList.add(options[i + 1]);
-                i += 2;
-                break;
+                case "-p":
+                    commandList.add(options[i + 1]);
+                    i += 2;
+                    break;
 
-            case "-nop":
-                numberOfPlayers = Integer.parseInt(options[i + 1]);
-                if (numberOfPlayers == 2) {
-                    numberOfGames = 30;
-                    numberOfSelectNodes = 7;
-                } else if (numberOfPlayers == 3) {
-                    numberOfGames = 10;
-                    numberOfSelectNodes = 5;
-                }
-                i += 2;
-                break;
+                case "-nop":
+                    numberOfPlayers = Integer.parseInt(options[i + 1]);
+                    if (numberOfPlayers == 2) {
+                        numberOfGames = 30;
+                        numberOfSelectNodes = 7;
+                    } else if (numberOfPlayers == 3) {
+                        numberOfGames = 10;
+                        numberOfSelectNodes = 5;
+                    }
+                    i += 2;
+                    break;
 
-            case "-nosn":
-                numberOfSelectNodes = Integer.parseInt(options[i + 1]);
-                i += 2;
-                break;
+                case "-nosn":
+                    numberOfSelectNodes = Integer.parseInt(options[i + 1]);
+                    i += 2;
+                    break;
 
-            case "-game":
-                numberOfGames = Integer.parseInt(options[i + 1]);
-                i += 2;
-                break;
+                case "-game":
+                    numberOfGames = Integer.parseInt(options[i + 1]);
+                    i += 2;
+                    break;
 
-            case "-sample":
-                commandList.addAll(sampleCommandList);
-                i++;
-                break;
-
-            case "-v":
-                visible = true;
-                i++;
-                break;
-
-            case "-olevel":
-                int tmp = Integer.parseInt(options[i + 1]);
-                if (tmp > 3 || tmp < 1) {
-                    System.out.println("出力モードは1,2,3のいずれかです．その他の値が入力されています．");
-                    System.out.println("既定値で実行します．");
-                } else {
-                    outputLevel = tmp;
-                }
-                i += 2;
-                break;
-
-            case "-auto":
-                readCommandList(commandList, "resource/command_list/command_list_green.txt");
-                if ("true".equals(options[i + 1])) {
+                case "-sample":
                     commandList.addAll(sampleCommandList);
-                }
-                i += 2;
-                break;
+                    i++;
+                    break;
 
-            case "-test":
-                numberOfGames = Integer.parseInt(options[i + 1]);
-                isTest = true;
-                readCommandList(commandList, "resource/command_list/command_list.txt");
-                outputLevel = 0;
-                i += 2;
-                break;
+                case "-v":
+                    visible = true;
+                    i++;
+                    break;
 
-            default:
-                throw new ArrayIndexOutOfBoundsException();
+                case "-olevel":
+                    int tmp = Integer.parseInt(options[i + 1]);
+                    if (tmp > 3 || tmp < 1) {
+                        System.out.println("出力モードは1,2,3のいずれかです．その他の値が入力されています．");
+                        System.out.println("既定値で実行します．");
+                    } else {
+                        outputLevel = tmp;
+                    }
+                    i += 2;
+                    break;
+
+                case "-auto":
+                    readCommandList(commandList, "resource/command_list/command_list_green.txt");
+                    if ("true".equals(options[i + 1])) {
+                        commandList.addAll(sampleCommandList);
+                    }
+                    i += 2;
+                    break;
+
+                case "-test":
+                    numberOfGames = Integer.parseInt(options[i + 1]);
+                    isTest = true;
+                    readCommandList(commandList, "resource/command_list/command_list.txt");
+                    outputLevel = 0;
+                    i += 2;
+                    break;
+
+                default:
+                    throw new OptionsException("存在しないオプション:"+options[i]);
             }
         }
 
@@ -274,4 +275,14 @@ class Setting {
         }
     }
 
+    class OptionsException extends Exception {
+        /**
+         * コンストラクタ
+         * 
+         * @param mes メッセージ
+         */
+        OptionsException(String mes) {
+            super(mes);
+        }
+    }
 }
