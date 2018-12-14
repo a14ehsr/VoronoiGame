@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -28,7 +29,6 @@ import ac.a14ehsr.platform.graph.GridGraph;
 import ac.a14ehsr.platform.gui.GraphDrawing;
 
 public class VoronoiGame {
-
     Process[] processes;
     InputStream[] inputStreams;
     OutputStream[] outputStreams;
@@ -402,6 +402,7 @@ public class VoronoiGame {
                 resultList.add(result);
             } catch (Exception e) {
                 e.printStackTrace();
+                resultList.add(new Result(matching));
             } finally {
                 processDestroy();
             }
@@ -423,146 +424,140 @@ public class VoronoiGame {
         }
     }
 
+    private int makeIndexForResult(int[] id, int index, int size) {
+        List<Integer> list = new ArrayList<>();
+        for (int i = 0; i < id.length; i++) {
+            if (i == index)
+                continue;
+            list.add(id[i]);
+        }
+        Collections.sort(list);
+
+        int ans = 0;
+        int count = id.length - 2;
+        for (int num : list) {
+            ans += num * Math.pow(size, count--);
+        }
+        return ans;
+    }
+    
+    private void makePairString(List<String> strList, int size, int count, String str) {
+        if (count == numberOfPlayers - 1) {
+            strList.add(str);
+            return;
+        }
+        for (int i = 0; i < size; i++) {
+            makePairString(strList, size, count + 1, str + "-" + i);
+        }
+    }
+    
     /**
      * リザルトの出力
      */
     private void result(String[] names, List<Result> resultList) {
-        int[][] rankCount = new int[names.length][numberOfPlayers];
-        if (numberOfPlayers == 3) {
-            System.out.println("RESULT");
-            int[][][] resultArray = new int[names.length][names.length][names.length];
-            for (Result result : resultList) {
-                int[] id = result.playerID;
-                int[] score = result.playerPoints;
-                int[] rank = result.rank;
-
-                resultArray[id[0]][id[1]][id[2]] = score[0];
-                resultArray[id[1]][id[0]][id[2]] = score[1];
-                resultArray[id[2]][id[0]][id[1]] = score[2];
-
-                for (int k = 0; k < rank.length; k++) {
-                    rankCount[id[k]][rank[k]]++;
+        // 各順位を何回とったか集計
+        int[][] rankCount = new int[names.length][numberOfPlayers+1];
+        String[][] resultArray = new String[names.length][(int) Math.pow(names.length, numberOfPlayers - 1)];
+        for(String[] array : resultArray){
+            Arrays.fill(array, "null");
+        }
+        for (Result result : resultList) {
+            int[] id = result.playerID;
+            int[] rank = result.rank;
+            for (int i = 0; i < numberOfPlayers; i++) {
+                if (result.isNoContest) {
+                    resultArray[id[i]][makeIndexForResult(id, i, names.length)] = "VOID";
+                    rankCount[id[i]][numberOfPlayers]++;
+                } else {
+                    rankCount[id[i]][rank[i]]++;
+                    resultArray[id[i]][makeIndexForResult(id, i, names.length)] = "" + (rank[i] + 1);
                 }
             }
-            System.out.printf("%22s", "");
-            for (int j = 0; j < names.length; j++) {
-                for (int k = j + 1; k < names.length; k++) {
-                    System.out.printf("(%d-%d)", j, k);
-                }
-            }
-            System.out.printf("  | r1 r2 r3 (times)");
-            System.out.println();
-            for (int i = 0; i < names.length; i++) {
-                System.out.printf("%3d,%18s ", i, names[i]);
-                for (int j = 0; j < names.length; j++) {
-                    for (int k = j + 1; k < names.length; k++) {
-                        System.out.printf("%4d ", resultArray[i][j][k]);
-                    }
-
-                }
-                System.out.printf(" | ");
-                for (int k = 0; k < rankCount[i].length; k++) {
-                    System.out.printf("%2d ", rankCount[i][k]);
-                }
-                System.out.println();
-            }
-
-            // リザルト出力用ファイルの準備
-            FileWriter file = null;
-            try {
-                file = new FileWriter("resource/result/result.csv");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            PrintWriter pw = new PrintWriter(new BufferedWriter(file));
-            pw.println("RESULT");
-            pw.printf(",");
-            for (int j = 0; j < names.length; j++) {
-                for (int k = j + 1; k < names.length; k++) {
-                    pw.printf(",(%d-%d)", j, k);
-                }
-            }
-            pw.printf(",r1,r2,r3,(times)");
-            pw.println();
-            for (int i = 0; i < names.length; i++) {
-                pw.printf("%d,%s,", i, names[i]);
-                for (int j = 0; j < names.length; j++) {
-                    for (int k = j + 1; k < names.length; k++) {
-                        pw.printf("%d,", resultArray[i][j][k]);
-                    }
-                }
-                for (int k = 0; k < rankCount[i].length; k++) {
-                    pw.printf("%d,", rankCount[i][k]);
-                }
-                pw.println();
-            }
-            pw.close();
-        } else if (numberOfPlayers == 2) {
-            System.out.println("RESULT");
-            int[][] resultArray = new int[names.length][names.length];
-            for (Result result : resultList) {
-                int[] id = result.playerID;
-                int[] score = result.playerPoints;
-                int[] rank = result.rank;
-
-                resultArray[id[0]][id[1]] = score[0];
-                resultArray[id[1]][id[0]] = score[1];
-
-                for (int k = 0; k < rank.length; k++) {
-                    rankCount[id[k]][rank[k]]++;
-                }
-            }
-            System.out.printf("%23s", "");
-            for (int j = 0; j < names.length; j++) {
-                System.out.printf("%4d ", j);
-            }
-            System.out.printf(" | r1 r2 (times)");
-            System.out.println();
-            for (int i = 0; i < names.length; i++) {
-                System.out.printf("%3d,%18s ", i, names[i]);
-                for (int j = 0; j < names.length; j++) {
-                    System.out.printf("%4d ", resultArray[i][j]);
-                }
-                System.out.printf(" | ");
-                for (int k = 0; k < rankCount[i].length; k++) {
-                    System.out.printf("%2d ", rankCount[i][k]);
-                }
-                System.out.println();
-            }
-
-            // リザルト出力用ファイルの準備
-            FileWriter file = null;
-            try {
-                file = new FileWriter("resource/result/result.csv");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            PrintWriter pw = new PrintWriter(new BufferedWriter(file));
-            pw.println("RESULT");
-            pw.printf(",");
-            for (int j = 0; j < names.length; j++) {
-                pw.printf(",%d", j);
-            }
-            pw.printf(",r1,r2,(times)");
-            pw.println();
-            for (int i = 0; i < names.length; i++) {
-                pw.printf("%d,%s,", i, names[i]);
-                for (int j = 0; j < names.length; j++) {
-                    pw.printf("%d,", resultArray[i][j]);
-                }
-                for (int k = 0; k < rankCount[i].length; k++) {
-                    pw.printf("%d,", rankCount[i][k]);
-                }
-                pw.println();
-            }
-            pw.close();
         }
 
-    }
+        boolean[] skip = new boolean[resultArray[0].length];
+        Arrays.fill(skip, true);
+        for (int i = 0; i < resultArray[0].length; i++) {
+            for (int j = 0; j < resultArray.length; j++) {
+                if (!"null".equals(resultArray[j][i])) {
+                    skip[i] = false;
+                    break;
+                }
+            }
+        }
 
+        List<String> strList = new ArrayList<>();
+        for (int i = 0; i < names.length; i++) {
+            makePairString(strList, names.length, 1, ""+i);
+        }
+        System.out.println("RESULT");
+        System.out.printf("%23s", "");
+        for (int i=0; i<strList.size(); i++) {
+            if (skip[i]) {
+                continue;
+            }
+            System.out.printf("(%5s)", strList.get(i));
+        }
+
+        System.out.printf(" |");
+        for (int i = 1; i <= numberOfPlayers; i++) {
+            System.out.print(" r"+i);
+        }
+        System.out.println(" VOID (times)");
+        for (int i = 0; i < names.length; i++) {
+            System.out.printf("%3d:%18s ", i, names[i]);
+            for (int j = 0; j < resultArray[i].length; j++) {
+                if (skip[j]) {
+                    continue;
+                }
+                System.out.printf("%6s ", resultArray[i][j]);
+            }
+            System.out.printf(" |");
+            for (int j = 0; j < numberOfPlayers; j++) {
+                System.out.printf(" %2d", rankCount[i][j]);
+            }
+            System.out.printf("   %2d\n", rankCount[i][numberOfPlayers]);
+        }
+
+        
+        // リザルト出力用ファイルの準備
+        FileWriter file = null;
+        try {
+            file = new FileWriter("resource/result/"+numberOfPlayers+"PlayersResult.csv");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        PrintWriter pw = new PrintWriter(new BufferedWriter(file));
+        pw.printf(",");
+        for (int i = 0; i < strList.size(); i++) {
+            if (skip[i]) {
+                continue;
+            }
+            pw.printf(",(%s)", strList.get(i));
+        }
+        for (int i = 1; i <= numberOfPlayers; i++) {
+            pw.print(",r" + i);
+        }
+        pw.println(",VOID,(times)");
+        for (int i = 0; i < names.length; i++) {
+            pw.printf("%d,%s", i, names[i]);
+            for (int j = 0; j < resultArray[i].length; j++) {
+                if (skip[j]) {
+                    continue;
+                }
+                pw.printf(",%s", resultArray[i][j]);
+            }
+            for (int j = 0; j < numberOfPlayers; j++) {
+                pw.printf(",%d", rankCount[i][j]);
+            }
+            pw.printf(",%d\n", rankCount[i][numberOfPlayers]);
+        }
+        pw.close();
+    }
+    
     /**
-     * テスト実行によるふるい
-     */
+    * テスト実行によるふるい
+    */
     private void test() {
         List<String> commandList = setting.getCommandList();
         List<String> sampleCommandList = setting.getTestSampleCommandList();
@@ -687,12 +682,22 @@ public class VoronoiGame {
         int[] playerPoints;
         int[] playerID;
         int[] rank;
+        boolean isNoContest;
 
         Result(String[] names, int[] playerPoints) {
             this.names = names;
             this.playerPoints = playerPoints;
             rank = new int[names.length];
             setRank();
+            isNoContest = false;
+        }
+
+        Result(int[] id) {
+            playerID = new int[id.length];
+            for (int i = 0; i < id.length; i++) {
+                playerID[i] = id[i];
+            }
+            isNoContest = true;
         }
 
         void setPlayerID(int[] id) {
@@ -702,37 +707,32 @@ public class VoronoiGame {
             }
         }
 
+        /**
+         * ランク情報をセットする
+         * 任意のプレイヤー人数に対応済み
+         */
         void setRank() {
+            // プレイヤーIDと特典をペアにして特典順にソート
             List<NumberPair> dict = new ArrayList<>();
             for (int i = 0; i < names.length; i++) {
                 dict.add(new NumberPair(i, playerPoints[i]));
             }
             dict.sort((a, b) -> b.num - a.num);
-            int[] point = new int[numberOfPlayers];
-            if (numberOfPlayers == 2) {
-                NumberPair numpair = dict.get(0);
-                rank[numpair.key] = 0;
-                if (numpair.num != dict.get(1).num) {
-                    rank[dict.get(1).key] = 1;
-                } else {
-                    rank[dict.get(1).key] = 0;
-                }
-            } else if (numberOfPlayers == 3) {
-                int[] score = new int[] { 0, 1, 2 };
-                int beforeNum = dict.get(0).num;
-                int index = 0;
-                NumberPair numpair = dict.get(0);
-                rank[numpair.key] = score[index];
 
-                for (int i = 1; i < numberOfPlayers; i++) {
-                    numpair = dict.get(i);
-                    if (beforeNum != numpair.num) {
-                        beforeNum = numpair.num;
-                        index = i;
-                    }
-                    rank[numpair.key] = score[index];
+            int beforeNum = dict.get(0).num;
+            int index = 0;
+            NumberPair numpair = dict.get(0);
+            // 初期化時点で0なので以下の処理は暗黙のうちに行われている.
+            //rank[numpair.key] = 0;
 
+            // 特典順に見て，同じ値の時は同じ順位をつけていく．
+            for (int i = 1; i < numberOfPlayers; i++) {
+                numpair = dict.get(i);
+                if (beforeNum != numpair.num) {
+                    beforeNum = numpair.num;
+                    index = i;
                 }
+                rank[numpair.key] = index;
             }
         }
     }

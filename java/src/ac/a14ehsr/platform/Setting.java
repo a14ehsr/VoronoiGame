@@ -186,11 +186,7 @@ class Setting {
      * @throws Exception 範囲外アクセス，型変換例外
      */
     void setOption(final String[] options) throws NumberFormatException, ArrayIndexOutOfBoundsException, OptionsException {
-        for (String str : options) {
-            System.out.println(str);
-        }
         for (int i = 0; i < options.length;) {
-            System.out.println(options[i]);
             switch (options[i]) {
                 case "-p":
                     commandList.add(options[i + 1]);
