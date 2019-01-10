@@ -1,12 +1,10 @@
 package ac.a14ehsr.platform;
 
-import java.io.PrintWriter;
-import java.util.Scanner;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 /**
  * プラットフォームのコマンドライン引数を受け取って諸々の処理をするクラス パラメータは
@@ -22,6 +20,7 @@ class Setting {
     private int outputLevel;
     private boolean isTest;
     private boolean visible;
+    private int timelimit;
 
     /**
      * デフォルトコンストラクタ コマンドのリストの準備と設定ファイル読み込み
@@ -118,6 +117,10 @@ class Setting {
     boolean isVisible() {
         return visible;
     }
+    
+    int getTimelimit(){
+        return timelimit;
+    }
 
     /**
      * デフォルトの設定を設定ファイルから読み込む
@@ -156,6 +159,13 @@ class Setting {
             throw new Exception("line4 need be outputlevel");
         }
         outputLevel = Integer.parseInt(line[1]);
+        
+        line = sc.nextLine().split(" ");
+        if (!"timelimit".equals(line[0])) {
+            throw new Exception("line5 need be timelimit");
+        }
+        timelimit = Integer.parseInt(line[1]);
+        
         visible = false;
     }
 

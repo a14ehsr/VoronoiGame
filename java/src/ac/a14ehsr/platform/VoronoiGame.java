@@ -8,22 +8,21 @@ package ac.a14ehsr.platform;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
+
 import ac.a14ehsr.platform.graph.Graph;
 import ac.a14ehsr.platform.graph.GridGraph;
 import ac.a14ehsr.platform.gui.GraphDrawing;
@@ -42,8 +41,8 @@ public class VoronoiGame {
     int numberOfPlayers;
     Graph graph;
 
-    int timeLimit = 1000;
-    int timeOut = timeLimit + 1000;
+    int timeLimit;
+    int timeOut;
 
     public VoronoiGame(String[] args) {
         // 各種設定と実行コマンド関連の処理
@@ -55,6 +54,9 @@ public class VoronoiGame {
         numberOfPlayers = setting.getNumberOfPlayers();
         outputLevel = setting.getOutputLevel();
         isVisible = setting.isVisible();
+
+        timeLimit = setting.getTimelimit();
+        timeOut = timeLimit + 1000;
     }
 
     /**
