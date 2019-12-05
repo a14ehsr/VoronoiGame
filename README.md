@@ -3,7 +3,24 @@ Copyright © 2018年 K.Hirano All rights reserved.
 
 作成日2018/11/08 
 
-最終更新日2018/12/14
+最終更新日2019/12/05
+
+#### 2019/12/05追記
+
+Windows環境での実行環境に関して，様々な手段を考えましたが，MinGWを使うのが楽そうです．
+
+以下を参考にインストールしてgccとMSYSのパッケージに対してパスを通してください（ただし細かいところまで実行可否の確認はできてません）
+
+https://webkaru.net/clang/mingw-gcc-install/
+
+http://yohshiy.blog.fc2.com/blog-entry-292.html
+
+また，今後複数人対戦ゲームのフレームワークの再設計，開発を検討しています．
+
+現バージョンでは実行Aiプログラムをファイル名から識別し，拡張子で実行コマンド（あるいはコンパイルコマンド）を生成していますが，
+
+新バージョンでは，プレイヤーにMakefileを書いてもらうことで，オプションなどに対応可能にする予定です．
+
 
 
 
@@ -27,7 +44,7 @@ Copyright © 2018年 K.Hirano All rights reserved.
 
 [神戸大学 大学院学生 研究紹介 (2016)](https://www.slideshare.net/AkihiroSugimoto1/ss-68236678)
 
-[パス上のボロノイゲーム JAIST (2010)](http://www.alg.cei.uec.ac.jp/itohiro/Games/100301/100301-08.pdf)
+[パス上のボロノイゲーム JAIST (2010)](http://www.alg.cei.uec.ac.jp/itohiro/Games/100301/100301-08.pdf)
 
 特殊なグラフ上で行われるボロノイゲームは解析されているようです．
 
